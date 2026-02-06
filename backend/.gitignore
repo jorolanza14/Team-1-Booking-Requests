@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.development
+.env.uat
+.env.production
+.env.local
+
+# Uploads
+uploads/documents/*
+!uploads/documents/.gitkeep
+uploads/temp/*
+!uploads/temp/.gitkeep
+
+# Logs
+logs/*.log
+*.log
+npm-debug.log*
+
+# Build
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Testing
+coverage/
+.nyc_output/
+
+# OS
+Thumbs.db

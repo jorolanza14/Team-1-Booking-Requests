@@ -1,0 +1,99 @@
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
+const bcrypt = require('bcrypt');
+
+const User = sequelize.define('User', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  email: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: true,
+    },
+  },
+  password: {
+    type: DataTypes.STRING(255),
+    allowNull: true, // Null for OAuth users
+  },
+  firstName: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+  },
+  lastName: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+  },
+  phone: {
+    type: DataTypes.STRING(20),
+  },
+  role: {
+    type: DataTypes.ENUM('parishioner', 'staff', 'priest', 'admin'),
+    defaultValue: 'parishioner',
+    allowNull: false,
+  },
+  googleId: {
+    type: DataTypes.STRING(255),
+    unique: true,
+    allowNull: true,
+  },
+  isActive: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  },
+  lastLoginAt: {
+    type: DataTypes.DATE,
+  },
+}, {
+  tableName: 'users',
+  timestamps: true,
+  underscored: true,
+  indexes: [
+    { fields: ['email'] },
+    { fields: ['google_id'] },
+    { fields: ['role'] },
+  ],
+});
+
+// Hash password before creating user
+User.beforeCreate(async (user) => {
+  if (user.password) {
+    const salt = await bcrypt.genSalt(12);
+    user.password = await bcrypt.hash(user.password, salt);
+  }
+});
+
+// Hash password before updating if changed
+User.beforeUpdate(async (user) => {
+  if (user.changed('password') && user.password) {
+    const salt = await bcrypt.genSalt(12);
+    user.password = await bcrypt.hash(user.password, salt);
+  }
+});
+
+// Instance method to verify password
+User.prototype.verifyPassword = async function(password) {
+  if (!this.password) return false;
+  return await bcrypt.compare(password, this.password);
+};
+
+// Instance method to get safe user object (without password)
+User.prototype.toSafeObject = function() {
+  return {
+    id: this.id,
+    email: this.email,
+    firstName: this.firstName,
+    lastName: this.lastName,
+    phone: this.phone,
+    role: this.role,
+    isActive: this.isActive,
+    createdAt: this.createdAt,
+    updatedAt: this.updatedAt,
+  };
+};
+
+module.exports = User;
