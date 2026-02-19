@@ -11,9 +11,12 @@ require('dotenv').config({
 const authRoutes = require('./routes/auth');
 const bookingRoutes = require('./routes/bookings');
 const intentionRoutes = require('./routes/intentions');
+const massIntentionRoutes = require('./routes/massIntentions');
+const massScheduleRoutes = require('./routes/massSchedules');
 const userRoutes = require('./routes/users');
 const fileRoutes = require('./routes/files');
 const parishRoutes = require('./routes/parishes');
+const apiDocsRoutes = require('./routes/apiDocs');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -82,6 +85,7 @@ app.get('/api', (req, res) => {
       auth: '/api/auth',
       bookings: '/api/bookings',
       intentions: '/api/intentions',
+      'mass-intentions': '/api/mass-intentions',
       users: '/api/users',
       files: '/api/files',
       parishes: '/api/parishes',
@@ -93,9 +97,12 @@ app.get('/api', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/intentions', intentionRoutes);
+app.use('/api/mass-intentions', massIntentionRoutes);
+app.use('/api/mass-schedules', massScheduleRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/api/parishes', parishRoutes);
+app.use('/api-docs', apiDocsRoutes);
 
 // 404 handler
 app.use((req, res) => {

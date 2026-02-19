@@ -10,7 +10,7 @@ This is a RESTful API built with Node.js, Express, and PostgreSQL that serves as
 
 - **User Authentication**: JWT-based authentication with refresh tokens
 - **Social Authentication**: Google OAuth support
-- **Role-Based Access Control**: Different roles (parishioner, staff, priest, admin)
+- **Role-Based Access Control**: Different roles (parishioner, parish_staff, priest, diocese_staff, parish_admin)
 - **Sacrament Bookings**: Manage baptism, wedding, and confirmation bookings
 - **Mass Intentions**: Submit and manage mass intentions
 - **File Uploads**: Support for document uploads (IDs, certificates, etc.)
@@ -70,7 +70,7 @@ backend/
 │   ├── controllers/
 │   │   ├── authController.js    # Login, register, OAuth
 │   │   ├── bookingController.js # Booking CRUD
-│   │   ├── intentionController.js # Mass intentions
+│   │   ├── massIntentionController.js # Mass intentions
 │   │   ├── parishController.js  # Parish management
 │   │   └── userController.js    # User management
 │   ├── middleware/
@@ -88,7 +88,7 @@ backend/
 │   │   ├── auth.js              # Auth endpoints
 │   │   ├── bookings.js          # Booking endpoints
 │   │   ├── files.js             # File upload endpoints
-│   │   ├── intentions.js        # Mass intention endpoints
+│   │   ├── massIntentions.js    # Mass intention endpoints
 │   │   ├── parishes.js          # Parish endpoints
 │   │   └── users.js             # User endpoints
 │   ├── services/
@@ -166,6 +166,10 @@ backend/
 ### Health Check
 - `GET /health` - Server health check
 
+### API Documentation
+- `GET /api-docs` - Interactive API documentation (Swagger UI)
+- `GET /api-docs/spec` - Raw OpenAPI specification
+
 ### Authentication
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - User login
@@ -195,11 +199,13 @@ backend/
 - `DELETE /api/bookings/:id` - Cancel booking
 
 ### Mass Intentions (Protected)
-- `GET /api/intentions` - Get user's intentions
-- `POST /api/intentions` - Create mass intention
-- `GET /api/intentions/:id` - Get specific intention
-- `PUT /api/intentions/:id` - Update intention
-- `DELETE /api/intentions/:id` - Cancel intention
+- `GET /api/mass-intentions` - Get mass intentions (with pagination/filtering)
+- `POST /api/mass-intentions` - Create mass intention
+- `GET /api/mass-intentions/:id` - Get specific mass intention
+- `PUT /api/mass-intentions/:id` - Update mass intention
+- `DELETE /api/mass-intentions/:id` - Delete mass intention
+- `PATCH /api/mass-intentions/:id/approve` - Approve mass intention (parish_staff/priest/diocese_staff/diocese_admin only)
+- `PATCH /api/mass-intentions/:id/decline` - Decline mass intention (parish_staff/priest/diocese_staff/diocese_admin only)
 
 ### Users (Protected)
 - `GET /api/users/me` - Get current user profile
@@ -209,7 +215,7 @@ backend/
 
 ### User
 - id, email, password, firstName, lastName, phone
-- role (parishioner, staff, priest, admin)
+- role (parishioner, parish_staff, priest, diocese_staff, parish_admin)
 - googleId, isActive, lastLoginAt
 
 ### Parish

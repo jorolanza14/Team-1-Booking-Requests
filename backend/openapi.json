@@ -1,0 +1,1622 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Diocese of Kalookan API",
+    "version": "1.0.0",
+    "description": "Backend API for the Diocese Sacramental Management System"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password", "firstName", "lastName"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john.doe@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 8,
+                    "example": "password123"
+                  },
+                  "firstName": {
+                    "type": "string",
+                    "example": "John"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "Doe"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "09123456789"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "User registered successfully"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    },
+                    "accessToken": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    },
+                    "refreshToken": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Login user",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john.doe@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Login successful"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    },
+                    "accessToken": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    },
+                    "refreshToken": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/parishes": {
+      "get": {
+        "summary": "Get all parishes",
+        "tags": ["Parishes"],
+        "parameters": [
+          {
+            "name": "active",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["true", "false"]
+            },
+            "description": "Filter by active status (default: true)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of parishes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Parish"
+                      }
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new parish",
+        "tags": ["Parishes"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Only diocese_staff and diocese_admin can create parishes",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "address"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Our Lady of Peace Parish"
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "123 Main Street, Kalookan City"
+                  },
+                  "contactEmail": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "info@olpparish.org"
+                  },
+                  "contactPhone": {
+                    "type": "string",
+                    "example": "+639123456789"
+                  },
+                  "schedule": {
+                    "type": "object",
+                    "example": {
+                      "sunday": "7:00 AM, 9:00 AM, 11:00 AM",
+                      "weekdays": "6:00 AM"
+                    }
+                  },
+                  "servicesOffered": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": ["baptism", "wedding", "confirmation", "mass-intention"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Parish created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Parish"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/parishes/{id}": {
+      "get": {
+        "summary": "Get a specific parish by ID",
+        "tags": ["Parishes"],
+        "description": "Public endpoint - no authentication required",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Parish ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Parish details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Parish"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a parish",
+        "tags": ["Parishes"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Diocese staff can update any parish; parish_admin can update only their assigned parish",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Parish ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Our Lady of Peace Parish"
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "123 Main Street, Kalookan City"
+                  },
+                  "contactEmail": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "info@olpparish.org"
+                  },
+                  "contactPhone": {
+                    "type": "string",
+                    "example": "+639123456789"
+                  },
+                  "schedule": {
+                    "type": "object",
+                    "example": {
+                      "sunday": "7:00 AM, 9:00 AM, 11:00 AM",
+                      "weekdays": "6:00 AM"
+                    }
+                  },
+                  "servicesOffered": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": ["baptism", "wedding", "confirmation", "mass-intention"]
+                  },
+                  "isActive": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Parish updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Parish"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a parish (soft delete)",
+        "tags": ["Parishes"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Only diocese_staff and diocese_admin can delete parishes",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Parish ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Parish deactivated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/parishes/{id}/hard-delete": {
+      "delete": {
+        "summary": "Hard delete a parish",
+        "tags": ["Parishes"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Only diocese_staff and diocese_admin can hard delete parishes",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Parish ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Parish deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/parishes/search": {
+      "get": {
+        "summary": "Search parishes by name or location",
+        "tags": ["Parishes"],
+        "description": "Public endpoint - no authentication required",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search term for name or address"
+          },
+          {
+            "name": "services",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by services offered (comma-separated)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of matching parishes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Parish"
+                      }
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/parishes/by-service/{service}" : {
+      "get": {
+        "summary": "Get parishes by service offered",
+        "tags": ["Parishes"],
+        "description": "Public endpoint - no authentication required",
+        "parameters": [
+          {
+            "name": "service",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Service to filter by (e.g., baptism, wedding, confirmation, mass-intention)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of parishes offering the service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Parish"
+                      }
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mass-intentions": {
+      "get": {
+        "summary": "Get all mass intentions",
+        "tags": ["Mass Intentions"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number for pagination"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Number of items per page"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["For the Dead", "Thanksgiving", "Special Intention"]
+            },
+            "description": "Filter by intention type"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["pending", "approved", "declined", "completed"]
+            },
+            "description": "Filter by status"
+          },
+          {
+            "name": "parishId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by parish ID"
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Filter by start date (YYYY-MM-DD)"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Filter by end date (YYYY-MM-DD)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of mass intentions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "massIntentions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MassIntention"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new mass intention",
+        "tags": ["Mass Intentions"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["type", "intentionDetails", "donorName", "parishId", "massSchedule"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["For the Dead", "Thanksgiving", "Special Intention"],
+                    "example": "For the Dead"
+                  },
+                  "intentionDetails": {
+                    "type": "string",
+                    "example": "For the souls of departed family members"
+                  },
+                  "donorName": {
+                    "type": "string",
+                    "example": "John Doe"
+                  },
+                  "parishId": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "massSchedule": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2023-12-25T08:00:00.000Z"
+                  },
+                  "preferredPriest": {
+                    "type": "string",
+                    "example": "Fr. John Smith"
+                  },
+                  "notes": {
+                    "type": "string",
+                    "example": "Special request for morning mass"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Mass intention created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Mass intention created successfully"
+                    },
+                    "massIntention": {
+                      "$ref": "#/components/schemas/MassIntention"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mass-intentions/{id}": {
+      "get": {
+        "summary": "Get a specific mass intention",
+        "tags": ["Mass Intentions"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Mass intention ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mass intention details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "massIntention": {
+                      "$ref": "#/components/schemas/MassIntention"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a mass intention",
+        "tags": ["Mass Intentions"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Mass intention ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["For the Dead", "Thanksgiving", "Special Intention"]
+                  },
+                  "intentionDetails": {
+                    "type": "string"
+                  },
+                  "donorName": {
+                    "type": "string"
+                  },
+                  "parishId": {
+                    "type": "integer"
+                  },
+                  "massSchedule": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "preferredPriest": {
+                    "type": "string"
+                  },
+                  "notes": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["pending", "approved", "declined", "completed"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mass intention updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Mass intention updated successfully"
+                    },
+                    "massIntention": {
+                      "$ref": "#/components/schemas/MassIntention"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a mass intention",
+        "tags": ["Mass Intentions"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Mass intention ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mass intention deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Mass intention deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mass-intentions/{id}/approve": {
+      "patch": {
+        "summary": "Approve a mass intention",
+        "tags": ["Mass Intentions"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Mass intention ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mass intention approved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Mass intention approved successfully"
+                    },
+                    "massIntention": {
+                      "$ref": "#/components/schemas/MassIntention"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mass-intentions/{id}/decline": {
+      "patch": {
+        "summary": "Decline a mass intention",
+        "tags": ["Mass Intentions"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Mass intention ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mass intention declined successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Mass intention declined successfully"
+                    },
+                    "massIntention": {
+                      "$ref": "#/components/schemas/MassIntention"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mass-schedules": {
+      "get": {
+        "summary": "Get all mass schedules",
+        "tags": ["Mass Schedules"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Only authorized personnel (parish_admin, parish_staff, diocese_staff, diocese_admin) can access",
+        "parameters": [
+          {
+            "name": "parishId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by parish ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of mass schedules",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "massSchedules": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MassSchedule"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new mass schedule",
+        "tags": ["Mass Schedules"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Only authorized personnel (parish_admin, parish_staff, diocese_staff, diocese_admin) can create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["parishId", "dayOfWeek", "startTime", "endTime"],
+                "properties": {
+                  "parishId": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "dayOfWeek": {
+                    "type": "string",
+                    "enum": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                    "example": "Sunday"
+                  },
+                  "startTime": {
+                    "type": "string",
+                    "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$",
+                    "example": "08:00"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$",
+                    "example": "09:00"
+                  },
+                  "priestId": {
+                    "type": "integer",
+                    "example": 2
+                  },
+                  "intentionCutoffTime": {
+                    "type": "string",
+                    "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$",
+                    "example": "06:00"
+                  },
+                  "notes": {
+                    "type": "string",
+                    "example": "Special Sunday mass for feast day"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Mass schedule created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Mass schedule created successfully"
+                    },
+                    "massSchedule": {
+                      "$ref": "#/components/schemas/MassSchedule"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mass-schedules/{id}": {
+      "get": {
+        "summary": "Get a specific mass schedule",
+        "tags": ["Mass Schedules"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Only authorized personnel (parish_admin, parish_staff, diocese_staff, diocese_admin) can access",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Mass schedule ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mass schedule details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "massSchedule": {
+                      "$ref": "#/components/schemas/MassSchedule"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a mass schedule",
+        "tags": ["Mass Schedules"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Only authorized personnel (parish_admin, parish_staff, diocese_staff, diocese_admin) can update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Mass schedule ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dayOfWeek": {
+                    "type": "string",
+                    "enum": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+                  },
+                  "startTime": {
+                    "type": "string",
+                    "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$"
+                  },
+                  "priestId": {
+                    "type": "integer"
+                  },
+                  "intentionCutoffTime": {
+                    "type": "string",
+                    "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$"
+                  },
+                  "notes": {
+                    "type": "string"
+                  },
+                  "isActive": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mass schedule updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Mass schedule updated successfully"
+                    },
+                    "massSchedule": {
+                      "$ref": "#/components/schemas/MassSchedule"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a mass schedule",
+        "tags": ["Mass Schedules"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Only authorized personnel (parish_admin, parish_staff, diocese_staff, diocese_admin) can delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Mass schedule ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mass schedule deactivated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Mass schedule deactivated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mass-schedules/pdf/generate": {
+      "get": {
+        "summary": "Generate PDF list of mass intentions",
+        "tags": ["Mass Schedules"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Only authorized personnel (parish_admin, parish_staff, diocese_staff, diocese_admin) can generate PDFs",
+        "parameters": [
+          {
+            "name": "parishId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Parish ID to generate PDF for"
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Specific date to filter mass intentions (YYYY-MM-DD)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PDF file containing mass intention list",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mass-schedules/notifications/send": {
+      "post": {
+        "summary": "Send notification emails to assigned priests and parish staff",
+        "tags": ["Mass Schedules"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Only authorized personnel (parish_admin, parish_staff, diocese_staff, diocese_admin) can send notifications",
+        "parameters": [
+          {
+            "name": "parishId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Parish ID to send notifications for"
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Specific date to filter mass intentions (YYYY-MM-DD)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notification emails sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Mass intention notifications sent successfully to 3 recipients"
+                    },
+                    "sentTo": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": ["Fr. John Smith (priest)", "Jane Doe (parish_staff)"]
+                    },
+                    "totalIntentions": {
+                      "type": "integer",
+                      "example": 5
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["parishioner", "parish_staff", "priest", "diocese_staff", "parish_admin"]
+          },
+          "assignedParishId": {
+            "type": "integer",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Parish": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "contactEmail": {
+            "type": "string",
+            "format": "email"
+          },
+          "contactPhone": {
+            "type": "string"
+          },
+          "schedule": {
+            "type": "object",
+            "description": "Mass schedules and availability"
+          },
+          "servicesOffered": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "MassIntention": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["For the Dead", "Thanksgiving", "Special Intention"]
+          },
+          "intentionDetails": {
+            "type": "string"
+          },
+          "donorName": {
+            "type": "string"
+          },
+          "dateRequested": {
+            "type": "string",
+            "format": "date"
+          },
+          "parishId": {
+            "type": "integer"
+          },
+          "massSchedule": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "preferredPriest": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "approved", "declined", "completed"]
+          },
+          "submittedBy": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "submitter": {
+            "$ref": "#/components/schemas/User"
+          },
+          "parish": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "MassSchedule": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "parishId": {
+            "type": "integer"
+          },
+          "dayOfWeek": {
+            "type": "string",
+            "enum": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+          },
+          "startTime": {
+            "type": "string",
+            "format": "time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "time"
+          },
+          "priestId": {
+            "type": "integer",
+            "nullable": true
+          },
+          "intentionCutoffTime": {
+            "type": "string",
+            "format": "time",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "parish": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              },
+              "address": {
+                "type": "string"
+              }
+            }
+          },
+          "assignedPriest": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "firstName": {
+                "type": "string"
+              },
+              "lastName": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string",
+                "format": "email"
+              }
+            }
+          }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "currentPage": {
+            "type": "integer"
+          },
+          "totalPages": {
+            "type": "integer"
+          },
+          "totalItems": {
+            "type": "integer"
+          },
+          "itemsPerPage": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

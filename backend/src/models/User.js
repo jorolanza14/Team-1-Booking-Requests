@@ -32,9 +32,17 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING(20),
   },
   role: {
-    type: DataTypes.ENUM('parishioner', 'staff', 'priest', 'admin'),
+    type: DataTypes.ENUM('parishioner', 'parish_staff', 'priest', 'diocese_staff', 'parish_admin'),
     defaultValue: 'parishioner',
     allowNull: false,
+  },
+  assignedParishId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'parishes',
+      key: 'id',
+    },
+    allowNull: true,
   },
   googleId: {
     type: DataTypes.STRING(255),
@@ -56,6 +64,7 @@ const User = sequelize.define('User', {
     { fields: ['email'] },
     { fields: ['google_id'] },
     { fields: ['role'] },
+    { fields: ['assigned_parish_id'] },
   ],
 });
 
@@ -90,6 +99,7 @@ User.prototype.toSafeObject = function() {
     lastName: this.lastName,
     phone: this.phone,
     role: this.role,
+    assignedParishId: this.assignedParishId,
     isActive: this.isActive,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,

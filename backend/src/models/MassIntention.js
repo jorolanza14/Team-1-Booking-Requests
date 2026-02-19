@@ -7,53 +7,64 @@ const MassIntention = sequelize.define('MassIntention', {
     primaryKey: true,
     autoIncrement: true,
   },
-  submittedBy: {
-    type: DataTypes.INTEGER,
+  type: {
+    type: DataTypes.ENUM('For the Dead', 'Thanksgiving', 'Special Intention'),
     allowNull: false,
-    references: {
-      model: 'users',
-      key: 'id',
-    },
+  },
+  intentionDetails: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    comment: 'For the Dead: names to pray for, Thanksgiving: what to be thankful for, Special Intention: what is the special intention',
+  },
+  donorName: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+  },
+  dateRequested: {
+    type: DataTypes.DATEONLY,
+    allowNull: false,
   },
   parishId: {
     type: DataTypes.INTEGER,
-    allowNull: false,  // Made required for RCDOK structure
     references: {
       model: 'parishes',
       key: 'id',
     },
+    allowNull: false,
   },
-  massDate: {
+  massSchedule: {
     type: DataTypes.DATE,
     allowNull: false,
   },
-  intentionType: {
-    type: DataTypes.ENUM('deceased', 'thanksgiving', 'petition'),
-    allowNull: false,
-  },
-  intentionFor: {
+  preferredPriest: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
-  specialNotes: {
+  notes: {
     type: DataTypes.TEXT,
-  },
-  offeringAmount: {
-    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
   },
   status: {
-    type: DataTypes.ENUM('pending', 'confirmed', 'completed'),
+    type: DataTypes.ENUM('pending', 'approved', 'declined', 'completed'),
     defaultValue: 'pending',
+    allowNull: false,
+  },
+  submittedBy: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'users',
+      key: 'id',
+    },
+    allowNull: false,
   },
 }, {
   tableName: 'mass_intentions',
   timestamps: true,
   underscored: true,
   indexes: [
-    { fields: ['submitted_by'] },
-    { fields: ['parish_id'] },  // Added index for parish
-    { fields: ['mass_date'] },
-    { fields: ['intention_type'] },
+    { fields: ['type'] },
+    { fields: ['date_requested'] },
+    { fields: ['parish_id'] },
     { fields: ['status'] },
   ],
 });
