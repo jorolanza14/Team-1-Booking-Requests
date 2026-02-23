@@ -1,395 +1,212 @@
-# Diocese Backend API
+# Diocese of Kalookan - Sacramental Booking System Backend
 
-Backend API for the Diocese Sacramental Management System (Flutter + Node.js/Express + PostgreSQL)
-
-## Overview
-
-This is a RESTful API built with Node.js, Express, and PostgreSQL that serves as the backend for the Flutter mobile application. It handles user authentication, sacrament bookings, mass intentions, and user management for the Diocese of Kalookan.
+Backend API for the Diocese Sacramental Management System supporting Baptisms, Weddings, Confirmations, First Communion, Confession, Anointing of the Sick, Funeral Mass, and Mass Intentions.
 
 ## Features
 
-- **User Authentication**: JWT-based authentication with refresh tokens
-- **Social Authentication**: Google OAuth support
-- **Role-Based Access Control**: Different roles (parishioner, parish_staff, priest, diocese_staff, parish_admin)
-- **Sacrament Bookings**: Manage baptism, wedding, and confirmation bookings
-- **Mass Intentions**: Submit and manage mass intentions
-- **File Uploads**: Support for document uploads (IDs, certificates, etc.)
-- **Email Notifications**: Email service for booking confirmations
-- **Rate Limiting**: Protection against brute force attacks
-- **CORS Support**: Configured for Flutter mobile apps
-- **Database**: PostgreSQL with Sequelize ORM
-- **RCDOK Structure**: Support for multiple parishes within the Roman Catholic Diocese of Kalookan
+### Sacrament Booking
+- **Baptism**: Child baptism bookings with godparent management
+- **Wedding**: Wedding bookings with seminar scheduling
+- **Confirmation**: Confirmation bookings with sponsor management
+- **First Communion (Eucharist)**: First Holy Communion bookings
+- **Confession (Reconciliation)**: Confession session bookings
+- **Anointing of the Sick**: Home/Hospital visit bookings
+- **Funeral Mass**: Funeral mass bookings with wake information
+- **Mass Intentions**: Mass intention requests (For the Dead, Thanksgiving, Special Intention)
 
-## Tech Stack
+### Parish Management
+- Configurable daily/weekly booking limits per sacrament
+- Custom time slots for each sacrament type
+- Blackout dates (one-time or recurring)
+- Advance booking windows (min/max days)
+- Mass schedule management
 
-- **Node.js**: Runtime environment (v18+)
-- **Express**: Web framework
-- **PostgreSQL**: Database (v15+)
-- **Sequelize**: ORM
-- **JWT**: Authentication
-- **bcrypt**: Password hashing
-- **Nodemailer**: Email service
-- **PDFKit**: PDF generation
-- **Multer**: File upload handling
-- **Passport**: Authentication middleware (Google OAuth)
+### Document Management
+- Upload required documents (birth certificates, baptismal certificates, etc.)
+- Document verification by parish staff
+- Proof of payment upload
 
-## Database Setup
+### Payment Tracking
+- Donation tracking
+- Multiple payment methods (cash, GCash, PayMaya, bank transfer)
+- Payment status management
 
-### Using Docker (Recommended)
+### Sacramental Records
+- Digitization of historical sacramental records
+- Searchable database by name, date, parents, etc.
+- Scanned document attachment
+- Export capabilities
 
-A Docker Compose file is provided in the `postgres/` directory for easy PostgreSQL setup:
+### User Roles
+- **Parishioner**: Submit bookings, upload documents, check status
+- **Parish Staff**: View/manage parish bookings, approve/decline requests
+- **Parish Admin**: Full parish management, staff management
+- **Priest**: View assigned sacraments
+- **Diocese Staff**: Cross-parish oversight
+- **Diocese Admin**: Full system access
 
-1. Navigate to the postgres directory:
-   ```bash
-   cd postgres
-   ```
+## API Endpoints
 
-2. Start the PostgreSQL container:
-   ```bash
-   docker-compose up -d
-   ```
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login
+- `POST /api/auth/refresh` - Refresh access token
+- `POST /api/auth/google` - Google OAuth login
 
-3. The database will be available at `localhost:5433` with the following credentials:
-   - Database: `diocese_db_dev`
-   - Username: `postgres`
-   - Password: `postgres`
-   - Port: `5433` (to avoid conflicts with existing PostgreSQL installations)
+### Sacrament Bookings
+- `POST /api/baptisms` - Create baptism booking
+- `GET /api/baptisms` - Get baptism bookings
+- `GET /api/baptisms/:id` - Get baptism booking details
+- `PUT /api/baptisms/:id` - Update baptism booking
+- `DELETE /api/baptisms/:id` - Cancel baptism booking
+- `PATCH /api/baptisms/:id/status` - Approve/decline booking (admin)
+- `GET /api/baptisms/available-slots` - Get available time slots
 
-### Manual Setup
+- `POST /api/sacraments/weddings` - Create wedding booking
+- `GET /api/sacraments/weddings` - Get wedding bookings
+- `POST /api/sacraments/confirmations` - Create confirmation booking
+- `GET /api/sacraments/confirmations` - Get confirmation bookings
+- `POST /api/sacraments/eucharist` - Create First Communion booking
+- `POST /api/sacraments/reconciliations` - Create Confession booking
+- `POST /api/sacraments/anointing-sick` - Create Anointing booking
+- `POST /api/sacraments/funeral-mass` - Create Funeral Mass booking
 
-Alternatively, you can install PostgreSQL directly on your system and create the database manually.
+### Parish Settings
+- `GET /api/parish-settings/:parishId/slot-settings` - Get slot settings
+- `POST /api/parish-settings/:parishId/slot-settings` - Create/update slot setting
+- `GET /api/parish-settings/:parishId/blackout-dates` - Get blackout dates
+- `POST /api/parish-settings/:parishId/blackout-dates` - Create blackout date
+- `GET /api/parish-settings/:parishId/configuration` - Get parish configuration
 
-## Project Structure
+### Sacramental Records
+- `GET /api/sacramental-records` - Search records
+- `POST /api/sacramental-records` - Create record (digitization)
+- `GET /api/sacramental-records/:id` - Get record details
+- `PUT /api/sacramental-records/:id` - Update record
+- `DELETE /api/sacramental-records/:id` - Delete record
+- `GET /api/sacramental-records/export` - Export records
 
-```
-backend/
-├── src/
-│   ├── config/
-│   │   ├── database.js          # PostgreSQL connection
-│   │   └── constants.js         # App constants
-│   ├── controllers/
-│   │   ├── authController.js    # Login, register, OAuth
-│   │   ├── bookingController.js # Booking CRUD
-│   │   ├── massIntentionController.js # Mass intentions
-│   │   ├── parishController.js  # Parish management
-│   │   └── userController.js    # User management
-│   ├── middleware/
-│   │   ├── auth.js              # JWT verification
-│   │   ├── errorHandler.js      # Global error handling
-│   │   ├── rateLimiter.js       # Rate limiting
-│   │   └── upload.js            # Multer configuration
-│   ├── models/
-│   │   ├── index.js             # Model associations
-│   │   ├── User.js              # User model
-│   │   ├── Booking.js           # Booking model
-│   │   ├── MassIntention.js     # Mass intention model
-│   │   └── Parish.js            # Parish model
-│   ├── routes/
-│   │   ├── auth.js              # Auth endpoints
-│   │   ├── bookings.js          # Booking endpoints
-│   │   ├── files.js             # File upload endpoints
-│   │   ├── massIntentions.js    # Mass intention endpoints
-│   │   ├── parishes.js          # Parish endpoints
-│   │   └── users.js             # User endpoints
-│   ├── services/
-│   │   ├── authService.js       # Auth business logic
-│   │   ├── fileService.js       # File upload/download management
-│   │   ├── googleAuthService.js # Google OAuth service
-│   │   ├── emailService.js      # Email sending
-│   │   ├── notificationService.js # Notifications
-│   │   └── pdfService.js        # PDF generation
-│   ├── utils/
-│   │   ├── logger.js            # Logging utility
-│   │   ├── validators.js        # Custom validators
-│   │   └── helpers.js           # Helper functions
-│   └── scripts/
-│       ├── migrate.js           # Database migrations
-│       └── seed.js              # Seed data
-├── uploads/
-│   ├── documents/               # User uploaded docs
-│   └── temp/                    # Temporary files
-├── logs/                        # Application logs
-├── tests/                       # Unit and integration tests
-├── .env.development             # Development environment
-├── .env.example                 # Example env file
-├── .env.production              # Production environment
-├── .env.uat                     # UAT environment
-├── .gitignore                   # Git ignore rules
-├── package.json                 # Dependencies
-├── server.js                    # Entry point
-└── README.md                    # Documentation
-```
+### Payments
+- `GET /api/payments` - Get payments
+- `POST /api/payments` - Create payment
+- `GET /api/payments/:id` - Get payment details
+- `PUT /api/payments/:id` - Update payment
+
+### Mass Intentions
+- `GET /api/mass-intentions` - Get mass intentions
+- `POST /api/mass-intentions` - Create mass intention
+- `GET /api/mass-schedules` - Get mass schedules
+- `POST /api/mass-schedules` - Create mass schedule
 
 ## Installation
 
 ### Prerequisites
-
-- Node.js v18+ LTS
-- PostgreSQL 15+ (or Docker for containerized setup)
-- Git
+- Node.js >= 18.0.0
+- PostgreSQL database
 
 ### Setup
 
-1. **Navigate to backend directory:**
-   ```bash
-   cd diocese-project/backend
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment:**
-   ```bash
-   cp .env.example .env.development
-   ```
-   
-   Edit `.env.development` with your database credentials, JWT secrets, and Google OAuth credentials.
-
-4. **Set up database:**
-   - Option A (Using Docker): Follow the Database Setup instructions above
-   - Option B (Manual): Create the database manually and update environment variables
-
-5. **Run database migrations:**
-   ```bash
-   npm run migrate
-   ```
-
-6. **Start the server:**
-   ```bash
-   npm run dev
-   ```
-
-## API Endpoints
-
-### Health Check
-- `GET /health` - Server health check
-
-### API Documentation
-- `GET /api-docs` - Interactive API documentation (Swagger UI)
-- `GET /api-docs/spec` - Raw OpenAPI specification
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `POST /api/auth/refresh` - Refresh access token
-- `POST /api/auth/google` - Google OAuth
-- `GET /api/auth/me` - Get current user profile (protected)
-- `PUT /api/auth/me` - Update user profile (protected)
-- `PATCH /api/auth/change-password` - Change password (protected)
-
-### Parishes (Public & Protected)
-- `GET /api/parishes` - Get all active parishes
-- `GET /api/parishes/:id` - Get specific parish by ID
-- `GET /api/parishes/search` - Search parishes by name/location/services
-- `GET /api/parishes/by-service/:service` - Get parishes by service offered
-
-### File Uploads (Protected)
-- `POST /api/files/upload` - Upload a file
-- `GET /api/files` - Get user's files
-- `GET /api/files/:filename` - Get specific file info
-- `DELETE /api/files/:filename` - Delete a file
-
-### Bookings (Protected)
-- `GET /api/bookings` - Get user's bookings
-- `POST /api/bookings` - Create new booking
-- `GET /api/bookings/:id` - Get specific booking
-- `PUT /api/bookings/:id` - Update booking
-- `DELETE /api/bookings/:id` - Cancel booking
-
-### Mass Intentions (Protected)
-- `GET /api/mass-intentions` - Get mass intentions (with pagination/filtering)
-- `POST /api/mass-intentions` - Create mass intention
-- `GET /api/mass-intentions/:id` - Get specific mass intention
-- `PUT /api/mass-intentions/:id` - Update mass intention
-- `DELETE /api/mass-intentions/:id` - Delete mass intention
-- `PATCH /api/mass-intentions/:id/approve` - Approve mass intention (parish_staff/priest/diocese_staff/diocese_admin only)
-- `PATCH /api/mass-intentions/:id/decline` - Decline mass intention (parish_staff/priest/diocese_staff/diocese_admin only)
-
-### Users (Protected)
-- `GET /api/users/me` - Get current user profile
-- `PUT /api/users/me` - Update user profile
-
-## Database Models
-
-### User
-- id, email, password, firstName, lastName, phone
-- role (parishioner, parish_staff, priest, diocese_staff, parish_admin)
-- googleId, isActive, lastLoginAt
-
-### Parish
-- id, name, address, contactEmail, contactPhone
-- schedule (JSONB - mass schedules and availability)
-- servicesOffered (ARRAY - sacraments offered: baptism, wedding, confirmation, etc.)
-- isActive
-
-### Booking
-- id, userId, parishId, bookingType (baptism, wedding, confirmation)
-- requestedDate, status (pending, confirmed, completed, cancelled)
-- notes, documents (JSONB), additionalInfo (JSONB)
-
-### MassIntention
-- id, submittedBy, parishId, massDate
-- intentionType (deceased, thanksgiving, petition)
-- intentionFor, specialNotes, offeringAmount
-- status (pending, confirmed, completed)
-
-## Environment Variables
-
-See `.env.example` for complete list. Key variables:
-
-- `NODE_ENV` - Environment (development/production)
-- `PORT` - Server port
-- `DB_*` - Database connection settings
-- `JWT_*` - JWT secret and expiration
-- `GOOGLE_CLIENT_ID` - Google OAuth client ID
-- `GOOGLE_CLIENT_SECRET` - Google OAuth client secret
-- `EMAIL_*` - Email service configuration
-- `ALLOWED_ORIGINS` - CORS origins for Flutter apps
-
-## Scripts
-
-- `npm start` - Start production server
-- `npm run dev` - Start development server with nodemon
-- `npm test` - Run tests
-- `npm run migrate` - Run database migrations
-- `npm run seed` - Seed database with sample data
-
-## Security Features
-
-- **Password Hashing**: bcrypt with 12 rounds
-- **JWT Authentication**: Access and refresh tokens
-- **Google OAuth**: Social authentication support
-- **Rate Limiting**: Auth endpoints (5 attempts/15min), API (100 requests/15min)
-- **CORS**: Configured for Flutter mobile apps
-- **Helmet**: Security headers
-- **Input Validation**: express-validator
-- **SQL Injection Protection**: Sequelize ORM
-
-## Development
-
-### Running in Development
+1. Install dependencies:
 ```bash
+npm install
+```
+
+2. Configure environment:
+```bash
+cp .env.example .env.development
+```
+
+Edit `.env.development` with your database credentials and other settings.
+
+3. Run database migrations:
+```bash
+npm run migrate
+```
+
+4. Seed sample data (optional):
+```bash
+npm run seed
+```
+
+5. Start the server:
+```bash
+# Development
 npm run dev
+
+# Production
+npm start
 ```
 
-### Testing
-```bash
-npm test
-```
+## Default Credentials (After Seeding)
 
-### Code Quality
-```bash
-npx eslint .
-npx prettier --write .
-```
+| Role | Email | Password |
+|------|-------|----------|
+| Diocese Admin | diocese.admin@diocese-kalookan.com | Password123! |
+| Parish Admin | parish.admin@olpparish.org | Password123! |
+| Parishioner | parishioner1@example.com | Password123! |
 
-## API Testing Examples
+**⚠️ Change these passwords in production!**
 
-### Register User
-```bash
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "john.doe@example.com",
-    "password": "password123",
-    "firstName": "John",
-    "lastName": "Doe",
-    "phone": "09123456789"
-  }'
-```
+## API Documentation
 
-### Login
-```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "john.doe@example.com",
-    "password": "password123"
-  }'
-```
+Access the Swagger UI at: `http://localhost:3000/api-docs`
 
-### Google OAuth
-```bash
-curl -X POST http://localhost:3000/api/auth/google \
-  -H "Content-Type: application/json" \
-  -d '{
-    "idToken": "GOOGLE_ID_TOKEN"
-  }'
-```
+Or view the OpenAPI spec in `openapi.json`.
 
-### Access Protected Route
-```bash
-curl -X GET http://localhost:3000/api/users/me \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
-```
+## Database Schema
 
-### File Upload
-```bash
-curl -X POST http://localhost:3000/api/files/upload \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-  -F "file=@/path/to/your/file.pdf" \
-  -F "category=identification"
-```
+### Core Tables
+- `users` - User accounts
+- `parishes` - Parish information
+- `bookings` - General bookings (legacy)
+- `mass_intentions` - Mass intention requests
+- `mass_schedules` - Regular mass schedules
 
-### Get Parishes
-```bash
-curl -X GET http://localhost:3000/api/parishes
-```
+### Sacrament Booking Tables
+- `baptism_bookings` - Baptism requests
+- `wedding_bookings` - Wedding requests
+- `confirmation_bookings` - Confirmation requests
+- `eucharist_bookings` - First Communion requests
+- `reconciliation_bookings` - Confession requests
+- `anointing_sick_bookings` - Anointing of the Sick requests
+- `funeral_mass_bookings` - Funeral Mass requests
 
-## Flutter Integration
+### Configuration Tables
+- `parish_slot_settings` - Booking limits and time slots
+- `blackout_dates` - Unavailable dates
 
-### Android Emulator
-Use: `http://10.0.2.2:3000`
+### Supporting Tables
+- `godparents` - Godparent/sponsor information
+- `booking_documents` - Uploaded documents
+- `payments` - Payment records
+- `sacramental_records` - Historical sacramental records
 
-### iOS Simulator
-Use: `http://127.0.0.1:3000`
+## Booking Workflow
 
-### Physical Device
-Use: `http://YOUR_COMPUTER_IP:3000`
+1. **Submission**: Parishioner submits booking request with required information
+2. **Email Confirmation**: Automatic email confirmation sent
+3. **Review**: Parish staff reviews the request
+4. **Approval/Decline**: Staff approves or declines with optional notes
+5. **Notification**: Email notification sent with status update
+6. **Payment**: Payment/donation processed (if applicable)
+7. **Completion**: Sacrament administered, record marked complete
 
-## Google OAuth Setup
+## Time Slot Management
 
-To enable Google OAuth:
+Each parish can configure:
+- **Daily Limits**: Maximum bookings per day
+- **Weekly Limits**: Maximum bookings per week
+- **Time Slots**: Available time windows with capacity
+- **Advance Booking**: Min/max days in advance
+- **Cutoff Times**: Same-day booking cutoff
 
-1. Go to Google Cloud Console (console.cloud.google.com)
-2. Create a new project or select an existing one
-3. Enable the Google People API for your project
-4. Go to "Credentials" in the left menu
-5. Click "Create Credentials" and select "OAuth 2.0 Client IDs"
-6. Configure the OAuth consent screen if prompted
-7. For application type, select "Web application"
-8. Add your authorized redirect URIs (typically your backend domain)
-9. After creation, add the Client ID and Client Secret to your environment variables
+## Blackout Dates
 
-## Troubleshooting
-
-### Database Connection Issues
-```bash
-# Check PostgreSQL status
-sudo systemctl status postgresql
-
-# Start PostgreSQL
-sudo systemctl start postgresql
-```
-
-### Port Already in Use
-```bash
-# Find process using port 3000
-lsof -i :3000
-
-# Kill the process
-kill -9 <PID>
-```
-
-### CORS Issues
-Ensure `ALLOWED_ORIGINS` in your environment file includes your Flutter app origin.
+Parishes can set blackout dates:
+- **Service-Specific**: Apply to specific sacrament types
+- **Recurring**: Yearly, monthly, or weekly recurrence
+- **Reason**: Optional explanation (e.g., "Holy Week")
 
 ## License
 
 MIT
-
-## Support
-
-For issues and questions, please contact the development team.

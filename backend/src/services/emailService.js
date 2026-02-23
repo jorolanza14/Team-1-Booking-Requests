@@ -1,16 +1,24 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer').default || require('nodemailer');
 
 class EmailService {
   constructor() {
-    this.transporter = nodemailer.createTransporter({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT) || 587,
-      secure: process.env.EMAIL_SECURE === 'true',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
+    // Only initialize transporter if email is configured
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
+      this.transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: parseInt(process.env.EMAIL_PORT) || 587,
+        secure: process.env.EMAIL_SECURE === 'true',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+      this.configured = true;
+    } else {
+      this.transporter = null;
+      this.configured = false;
+      console.log('⚠️  Email not configured. Email notifications will be skipped.');
+    }
 
     this.from = process.env.EMAIL_FROM || '"Diocese of Kalookan" <noreply@diocese-kalookan.com>';
   }
@@ -19,6 +27,8 @@ class EmailService {
    * Sends a welcome email to a new user
    */
   async sendWelcomeEmail(user) {
+    if (!this.configured) return { skipped: true, reason: 'Email not configured' };
+
     const mailOptions = {
       from: this.from,
       to: user.email,
@@ -48,6 +58,8 @@ class EmailService {
    * Sends a booking confirmation email
    */
   async sendBookingConfirmation(user, booking) {
+    if (!this.configured) return { skipped: true, reason: 'Email not configured' };
+
     const mailOptions = {
       from: this.from,
       to: user.email,
@@ -84,6 +96,8 @@ class EmailService {
    * Sends a password change notification
    */
   async sendPasswordChangeNotification(user) {
+    if (!this.configured) return { skipped: true, reason: 'Email not configured' };
+
     const mailOptions = {
       from: this.from,
       to: user.email,
@@ -113,6 +127,11 @@ class EmailService {
    * Sends a general notification email
    */
   async sendNotification(to, subject, message) {
+    if (!this.configured) {
+      console.log(`📧 Email notification skipped (not configured): ${subject}`);
+      return { skipped: true, reason: 'Email not configured' };
+    }
+
     const mailOptions = {
       from: this.from,
       to,
@@ -126,7 +145,8 @@ class EmailService {
       return result;
     } catch (error) {
       console.error('Error sending notification email:', error);
-      throw new Error(`Failed to send notification email: ${error.message}`);
+      // Don't throw error - just log it so booking can still proceed
+      return { error: error.message };
     }
   }
 
@@ -134,6 +154,11 @@ class EmailService {
    * Verifies the email configuration
    */
   async verifyConnection() {
+    if (!this.configured) {
+      console.log('Email not configured, skipping verification');
+      return false;
+    }
+
     try {
       await this.transporter.verify();
       console.log('Email server configuration verified successfully');

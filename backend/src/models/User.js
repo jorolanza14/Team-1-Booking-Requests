@@ -31,8 +31,12 @@ const User = sequelize.define('User', {
   phone: {
     type: DataTypes.STRING(20),
   },
+  middleName: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
   role: {
-    type: DataTypes.ENUM('parishioner', 'parish_staff', 'priest', 'diocese_staff', 'parish_admin'),
+    type: DataTypes.ENUM('parishioner', 'parish_staff', 'priest', 'diocese_staff', 'parish_admin', 'diocese_admin'),
     defaultValue: 'parishioner',
     allowNull: false,
   },
@@ -97,6 +101,7 @@ User.prototype.toSafeObject = function() {
     email: this.email,
     firstName: this.firstName,
     lastName: this.lastName,
+    middleName: this.middleName,
     phone: this.phone,
     role: this.role,
     assignedParishId: this.assignedParishId,

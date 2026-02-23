@@ -24,14 +24,32 @@ const Parish = sequelize.define('Parish', {
   contactPhone: {
     type: DataTypes.STRING(20),
   },
+  // Additional contact info
+  contactPerson: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
+  // Schedule configuration
   schedule: {
-    type: DataTypes.JSONB, // Store mass schedules and availability
+    type: DataTypes.JSONB,
     allowNull: true,
   },
   servicesOffered: {
-    type: DataTypes.ARRAY(DataTypes.STRING), // e.g., ['baptism', 'wedding', 'confirmation']
+    type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: true,
     defaultValue: [],
+  },
+  // Sacrament-specific settings
+  sacramentSettings: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    defaultValue: {},
+  },
+  // Booking configuration
+  bookingSettings: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    defaultValue: {},
   },
   isActive: {
     type: DataTypes.BOOLEAN,

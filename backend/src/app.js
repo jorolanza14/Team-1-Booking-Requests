@@ -18,6 +18,13 @@ const fileRoutes = require('./routes/files');
 const parishRoutes = require('./routes/parishes');
 const apiDocsRoutes = require('./routes/apiDocs');
 
+// New sacrament booking routes
+const baptismRoutes = require('./routes/baptisms');
+const sacramentRoutes = require('./routes/sacraments');
+const parishSettingsRoutes = require('./routes/parishSettings');
+const sacramentalRecordsRoutes = require('./routes/sacramentalRecords');
+const paymentRoutes = require('./routes/payments');
+
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimiter');
@@ -80,7 +87,7 @@ app.get('/api', (req, res) => {
   res.json({
     name: 'Diocese of Kalookan API',
     version: '1.0.0',
-    description: 'Backend API for Flutter mobile application',
+    description: 'Backend API for sacramental booking and management system',
     endpoints: {
       auth: '/api/auth',
       bookings: '/api/bookings',
@@ -89,6 +96,11 @@ app.get('/api', (req, res) => {
       users: '/api/users',
       files: '/api/files',
       parishes: '/api/parishes',
+      baptisms: '/api/baptisms',
+      sacraments: '/api/sacraments (weddings, confirmations, eucharist, reconciliations, anointing-sick, funeral-mass)',
+      'parish-settings': '/api/parish-settings',
+      'sacramental-records': '/api/sacramental-records',
+      payments: '/api/payments',
     },
   });
 });
@@ -102,6 +114,14 @@ app.use('/api/mass-schedules', massScheduleRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/api/parishes', parishRoutes);
+
+// New sacrament booking routes
+app.use('/api/baptisms', baptismRoutes);
+app.use('/api/sacraments', sacramentRoutes);
+app.use('/api/parish-settings', parishSettingsRoutes);
+app.use('/api/sacramental-records', sacramentalRecordsRoutes);
+app.use('/api/payments', paymentRoutes);
+
 app.use('/api-docs', apiDocsRoutes);
 
 // 404 handler

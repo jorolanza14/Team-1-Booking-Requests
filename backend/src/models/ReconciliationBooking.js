@@ -1,0 +1,89 @@
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
+
+const ReconciliationBooking = sequelize.define('ReconciliationBooking', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  parishId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'parishes',
+      key: 'id',
+    },
+  },
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'users',
+      key: 'id',
+    },
+  },
+  // Penitent's information
+  penitentName: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+  },
+  // Contact information
+  contactEmail: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+  },
+  contactPhone: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+  },
+  // Preferred schedule
+  preferredDate: {
+    type: DataTypes.DATEONLY,
+    allowNull: false,
+  },
+  preferredTimeSlot: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+  },
+  // Additional information
+  additionalNotes: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  // Status tracking
+  status: {
+    type: DataTypes.ENUM('pending', 'approved', 'declined', 'completed', 'rescheduled'),
+    defaultValue: 'pending',
+    allowNull: false,
+  },
+  adminNotes: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  approvedBy: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'users',
+      key: 'id',
+    },
+    allowNull: true,
+  },
+  approvedAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+}, {
+  tableName: 'reconciliation_bookings',
+  timestamps: true,
+  underscored: true,
+  indexes: [
+    { fields: ['parish_id'] },
+    { fields: ['user_id'] },
+    { fields: ['preferred_date'] },
+    { fields: ['status'] },
+    { fields: ['penitent_name'] },
+  ],
+});
+
+module.exports = ReconciliationBooking;
