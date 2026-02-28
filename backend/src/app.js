@@ -16,6 +16,7 @@ const massScheduleRoutes = require('./routes/massSchedules');
 const userRoutes = require('./routes/users');
 const fileRoutes = require('./routes/files');
 const parishRoutes = require('./routes/parishes');
+const adminRoutes = require('./routes/admin');
 const apiDocsRoutes = require('./routes/apiDocs');
 
 // Import middleware
@@ -89,6 +90,7 @@ app.get('/api', (req, res) => {
       users: '/api/users',
       files: '/api/files',
       parishes: '/api/parishes',
+      admin: '/api/admin',
     },
   });
 });
@@ -102,6 +104,7 @@ app.use('/api/mass-schedules', massScheduleRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/api/parishes', parishRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api-docs', apiDocsRoutes);
 
 // 404 handler

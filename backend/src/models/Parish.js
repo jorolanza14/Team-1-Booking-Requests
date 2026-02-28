@@ -24,6 +24,10 @@ const Parish = sequelize.define('Parish', {
   contactPhone: {
     type: DataTypes.STRING(20),
   },
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   schedule: {
     type: DataTypes.JSONB, // Store mass schedules and availability
     allowNull: true,
@@ -32,6 +36,10 @@ const Parish = sequelize.define('Parish', {
     type: DataTypes.ARRAY(DataTypes.STRING), // e.g., ['baptism', 'wedding', 'confirmation']
     allowNull: true,
     defaultValue: [],
+  },
+  imageUrl: {
+    type: DataTypes.STRING(500),
+    allowNull: true,
   },
   isActive: {
     type: DataTypes.BOOLEAN,
@@ -46,5 +54,6 @@ const Parish = sequelize.define('Parish', {
     { fields: ['is_active'] },
   ],
 });
+
 
 module.exports = Parish;

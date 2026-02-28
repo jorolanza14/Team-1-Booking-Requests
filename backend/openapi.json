@@ -139,6 +139,1477 @@
         }
       }
     },
+    "/api/admin/dashboard": {
+      "get": {
+        "summary": "Get dashboard statistics",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Retrieve comprehensive dashboard statistics including summary counts, recent bookings, and breakdowns by status and type. Requires admin privileges.",
+        "responses": {
+          "200": {
+            "description": "Dashboard statistics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/DashboardStats"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "summary": "List all users",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Retrieve a paginated list of all users with optional filtering. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            },
+            "description": "Page number for pagination"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Number of items per page"
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["parishioner", "parish_staff", "priest", "parish_admin", "diocese_staff", "diocese_admin"]
+            },
+            "description": "Filter by user role"
+          },
+          {
+            "name": "parishId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by parish ID"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search by name or email"
+          },
+          {
+            "name": "isActive",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["true", "false"]
+            },
+            "description": "Filter by active status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/AdminUserResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new user",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Create a new user account. Requires admin privileges.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password", "firstName", "lastName", "role"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john.doe@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 8,
+                    "example": "password123"
+                  },
+                  "firstName": {
+                    "type": "string",
+                    "example": "John"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "Doe"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "09123456789"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": ["parishioner", "parish_staff", "priest", "parish_admin", "diocese_staff", "diocese_admin"],
+                    "example": "parishioner"
+                  },
+                  "assignedParishId": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "isActive": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or email already exists"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/api/admin/users/{id}": {
+      "get": {
+        "summary": "Get user by ID",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Retrieve detailed information about a specific user. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update user",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Update user information. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "User ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john.doe@example.com"
+                  },
+                  "firstName": {
+                    "type": "string",
+                    "example": "John"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "Doe"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "09123456789"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": ["parishioner", "parish_staff", "priest", "parish_admin", "diocese_staff", "diocese_admin"]
+                  },
+                  "assignedParishId": {
+                    "type": "integer",
+                    "nullable": true
+                  },
+                  "isActive": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete user (soft delete)",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Soft delete a user by setting isActive to false. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/api/admin/parishes": {
+      "get": {
+        "summary": "List all parishes",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Retrieve a paginated list of all parishes with optional filtering. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            },
+            "description": "Page number for pagination"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Number of items per page"
+          },
+          {
+            "name": "isActive",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["true", "false"]
+            },
+            "description": "Filter by active status"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search by parish name or address"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of parishes retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/AdminParishResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new parish",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Create a new parish. Requires admin privileges.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "address"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Our Lady of Peace Parish"
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "123 Main Street, Kalookan City"
+                  },
+                  "contactEmail": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "info@olpparish.org"
+                  },
+                  "contactPhone": {
+                    "type": "string",
+                    "example": "+639123456789"
+                  },
+                  "schedule": {
+                    "type": "object",
+                    "example": {
+                      "sunday": "7:00 AM, 9:00 AM, 11:00 AM",
+                      "weekdays": "6:00 AM"
+                    }
+                  },
+                  "servicesOffered": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": ["baptism", "wedding", "confirmation", "mass-intention"]
+                  },
+                  "isActive": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Parish created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Parish"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Parish created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/api/admin/parishes/{id}": {
+      "get": {
+        "summary": "Get parish by ID",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Retrieve detailed information about a specific parish. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Parish ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Parish details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Parish"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Parish not found"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update parish",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Update parish information. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Parish ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Our Lady of Peace Parish"
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "123 Main Street, Kalookan City"
+                  },
+                  "contactEmail": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "info@olpparish.org"
+                  },
+                  "contactPhone": {
+                    "type": "string",
+                    "example": "+639123456789"
+                  },
+                  "schedule": {
+                    "type": "object",
+                    "example": {
+                      "sunday": "7:00 AM, 9:00 AM, 11:00 AM",
+                      "weekdays": "6:00 AM"
+                    }
+                  },
+                  "servicesOffered": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": ["baptism", "wedding", "confirmation", "mass-intention"]
+                  },
+                  "isActive": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Parish updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Parish"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Parish updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Parish not found"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete parish (soft delete)",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Soft delete a parish by setting isActive to false. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Parish ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Parish deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Parish deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Parish not found"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/api/admin/parishes/{parishId}/configurations": {
+      "get": {
+        "summary": "Get parish configurations",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Retrieve system configurations for a specific parish. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "parishId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Parish ID"
+          },
+          {
+            "name": "configType",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["booking", "mass_intention", "general"]
+            },
+            "description": "Filter by configuration type"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Parish configurations retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SystemConfiguration"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Parish not found"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/api/admin/parishes/{parishId}/configurations/{configType}": {
+      "put": {
+        "summary": "Create/Update configuration",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Create or update system configuration for a parish. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "parishId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Parish ID"
+          },
+          {
+            "name": "configType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["booking", "mass_intention", "general"]
+            },
+            "description": "Configuration type"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemConfiguration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Configuration updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/SystemConfiguration"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Configuration updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Configuration created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/SystemConfiguration"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Configuration created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Parish not found"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/api/admin/configurations/{id}": {
+      "delete": {
+        "summary": "Delete configuration",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Delete a system configuration. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Configuration ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Configuration deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Configuration deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Configuration not found"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/api/admin/bookings": {
+      "get": {
+        "summary": "List all bookings",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Retrieve a paginated list of all bookings with optional filtering. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            },
+            "description": "Page number for pagination"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Number of items per page"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["pending", "approved", "rejected", "completed", "cancelled"]
+            },
+            "description": "Filter by booking status"
+          },
+          {
+            "name": "parishId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by parish ID"
+          },
+          {
+            "name": "bookingType",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["baptism", "wedding", "confirmation", "mass-intention"]
+            },
+            "description": "Filter by booking type"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by user ID"
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Filter by start date (YYYY-MM-DD)"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Filter by end date (YYYY-MM-DD)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of bookings retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/AdminBookingResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/api/admin/bookings/{id}": {
+      "get": {
+        "summary": "Get booking by ID",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Retrieve detailed information about a specific booking. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Booking ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Booking"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Booking not found"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/api/admin/bookings/{id}/status": {
+      "put": {
+        "summary": "Update booking status",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Update the status of a booking. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Booking ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["status"],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["pending", "approved", "rejected", "completed", "cancelled"],
+                    "example": "approved"
+                  },
+                  "adminNotes": {
+                    "type": "string",
+                    "example": "Approved with special conditions"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking status updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Booking"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Booking status updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status"
+          },
+          "404": {
+            "description": "Booking not found"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/api/admin/bookings/{id}": {
+      "delete": {
+        "summary": "Delete booking",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Delete a booking. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Booking ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Booking deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Booking not found"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/api/admin/mass-intentions": {
+      "get": {
+        "summary": "List all mass intentions",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Retrieve a list of all mass intentions with optional filtering. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            },
+            "description": "Page number for pagination"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "description": "Number of items per page"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["pending", "approved", "declined", "completed"]
+            },
+            "description": "Filter by status"
+          },
+          {
+            "name": "parishId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by parish ID"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["For the Dead", "Thanksgiving", "Special Intention"]
+            },
+            "description": "Filter by intention type"
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Filter by start date (YYYY-MM-DD)"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Filter by end date (YYYY-MM-DD)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of mass intentions retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MassIntention"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
+    "/api/admin/mass-intentions/{id}/status": {
+      "put": {
+        "summary": "Update mass intention status",
+        "tags": ["Admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Update the status of a mass intention. Requires admin privileges.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Mass intention ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["status"],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["pending", "approved", "declined", "completed"],
+                    "example": "approved"
+                  },
+                  "adminNotes": {
+                    "type": "string",
+                    "example": "Approved for Sunday mass"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mass intention status updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/MassIntention"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Mass intention status updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status"
+          },
+          "404": {
+            "description": "Mass intention not found"
+          },
+          "403": {
+            "description": "Forbidden - Admin access required"
+          }
+        }
+      }
+    },
     "/api/parishes": {
       "get": {
         "summary": "Get all parishes",
@@ -525,7 +1996,7 @@
         }
       }
     },
-    "/api/parishes/by-service/{service}" : {
+    "/api/parishes/by-service/{service}": {
       "get": {
         "summary": "Get parishes by service offered",
         "tags": ["Parishes"],
@@ -1387,7 +2858,7 @@
           },
           "role": {
             "type": "string",
-            "enum": ["parishioner", "parish_staff", "priest", "diocese_staff", "parish_admin"]
+            "enum": ["parishioner", "parish_staff", "priest", "diocese_staff", "parish_admin", "diocese_admin"]
           },
           "assignedParishId": {
             "type": "integer",
@@ -1609,6 +3080,311 @@
             "type": "integer"
           }
         }
+      },
+      "Booking": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "bookingType": {
+            "type": "string",
+            "enum": ["baptism", "wedding", "confirmation", "mass-intention"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "approved", "rejected", "completed", "cancelled"]
+          },
+          "userId": {
+            "type": "integer"
+          },
+          "parishId": {
+            "type": "integer"
+          },
+          "preferredDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "adminNotes": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "SystemConfiguration": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Configuration ID"
+          },
+          "parishId": {
+            "type": "integer",
+            "description": "Associated parish ID"
+          },
+          "configType": {
+            "type": "string",
+            "enum": ["booking", "mass_intention", "general"],
+            "description": "Type of configuration"
+          },
+          "dailyLimit": {
+            "type": "integer",
+            "description": "Daily booking/intention limit",
+            "nullable": true
+          },
+          "weeklyLimit": {
+            "type": "integer",
+            "description": "Weekly booking/intention limit",
+            "nullable": true
+          },
+          "monthlyLimit": {
+            "type": "integer",
+            "description": "Monthly booking/intention limit",
+            "nullable": true
+          },
+          "timeSlots": {
+            "type": "array",
+            "description": "Available time slots for bookings",
+            "items": {
+              "type": "object",
+              "properties": {
+                "startTime": {
+                  "type": "string",
+                  "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$"
+                },
+                "endTime": {
+                  "type": "string",
+                  "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$"
+                },
+                "capacity": {
+                  "type": "integer"
+                }
+              }
+            },
+            "nullable": true
+          },
+          "blackoutDates": {
+            "type": "array",
+            "description": "Dates when bookings are not allowed",
+            "items": {
+              "type": "string",
+              "format": "date"
+            },
+            "nullable": true
+          },
+          "massSchedules": {
+            "type": "array",
+            "description": "Mass schedule configurations",
+            "items": {
+              "type": "object",
+              "properties": {
+                "dayOfWeek": {
+                  "type": "string",
+                  "enum": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+                },
+                "times": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$"
+                  }
+                }
+              }
+            },
+            "nullable": true
+          },
+          "bookingCutoffDays": {
+            "type": "integer",
+            "description": "Number of days before event when bookings close",
+            "nullable": true
+          },
+          "maxAdvanceBookingDays": {
+            "type": "integer",
+            "description": "Maximum days in advance for booking",
+            "nullable": true
+          },
+          "cutoffTime": {
+            "type": "string",
+            "description": "Daily cutoff time for same-day bookings",
+            "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$",
+            "nullable": true
+          },
+          "autoApprove": {
+            "type": "boolean",
+            "description": "Whether to auto-approve bookings/intentions",
+            "nullable": true
+          },
+          "requiredDocuments": {
+            "type": "array",
+            "description": "List of required documents for bookings",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "maxGodparents": {
+            "type": "integer",
+            "description": "Maximum number of godparents allowed",
+            "nullable": true
+          },
+          "instructions": {
+            "type": "string",
+            "description": "Special instructions for users",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether this configuration is active",
+            "default": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "DashboardStats": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "object",
+            "properties": {
+              "totalUsers": {
+                "type": "integer",
+                "example": 150
+              },
+              "totalParishes": {
+                "type": "integer",
+                "example": 25
+              },
+              "totalBookings": {
+                "type": "integer",
+                "example": 500
+              },
+              "totalMassIntentions": {
+                "type": "integer",
+                "example": 200
+              },
+              "pendingApprovals": {
+                "type": "integer",
+                "example": 15
+              },
+              "activeParishes": {
+                "type": "integer",
+                "example": 23
+              }
+            }
+          },
+          "recentBookings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Booking"
+            },
+            "description": "List of recent bookings (last 10)"
+          },
+          "bookingsByStatus": {
+            "type": "object",
+            "properties": {
+              "pending": {
+                "type": "integer",
+                "example": 25
+              },
+              "approved": {
+                "type": "integer",
+                "example": 150
+              },
+              "rejected": {
+                "type": "integer",
+                "example": 10
+              },
+              "completed": {
+                "type": "integer",
+                "example": 300
+              },
+              "cancelled": {
+                "type": "integer",
+                "example": 15
+              }
+            }
+          },
+          "bookingsByType": {
+            "type": "object",
+            "properties": {
+              "baptism": {
+                "type": "integer",
+                "example": 100
+              },
+              "wedding": {
+                "type": "integer",
+                "example": 50
+              },
+              "confirmation": {
+                "type": "integer",
+                "example": 75
+              },
+              "mass-intention": {
+                "type": "integer",
+                "example": 275
+              }
+            }
+          }
+        }
+      },
+      "AdminUserResponse": {
+        "type": "object",
+        "properties": {
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          }
+        }
+      },
+      "AdminParishResponse": {
+        "type": "object",
+        "properties": {
+          "parishes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Parish"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          }
+        }
+      },
+      "AdminBookingResponse": {
+        "type": "object",
+        "properties": {
+          "bookings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Booking"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -1617,6 +3393,28 @@
         "scheme": "bearer",
         "bearerFormat": "JWT"
       }
-    }
+    },
+    "tags": [
+      {
+        "name": "Authentication",
+        "description": "User authentication and authorization endpoints"
+      },
+      {
+        "name": "Parishes",
+        "description": "Parish management endpoints"
+      },
+      {
+        "name": "Mass Intentions",
+        "description": "Mass intention booking and management endpoints"
+      },
+      {
+        "name": "Mass Schedules",
+        "description": "Mass schedule management endpoints"
+      },
+      {
+        "name": "Admin",
+        "description": "Administrative endpoints for system management including dashboard, user management, parish management, system configuration, and booking oversight"
+      }
+    ]
   }
 }
