@@ -7,14 +7,6 @@ const EucharistBooking = sequelize.define('EucharistBooking', {
     primaryKey: true,
     autoIncrement: true,
   },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'users',
-      key: 'id',
-    },
-  },
   parishId: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -23,65 +15,75 @@ const EucharistBooking = sequelize.define('EucharistBooking', {
       key: 'id',
     },
   },
-  // Communicant information
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'users',
+      key: 'id',
+    },
+  },
+  // Communicant's information
   communicantName: {
     type: DataTypes.STRING(255),
-    allowNull: true,
+    allowNull: false,
   },
-  communicantDateOfBirth: {
-    type: DataTypes.DATEONLY,
-    allowNull: true,
-  },
-  // Parents information
   fatherName: {
     type: DataTypes.STRING(255),
-    allowNull: true,
+    allowNull: false,
   },
   motherName: {
     type: DataTypes.STRING(255),
-    allowNull: true,
+    allowNull: false,
   },
   // Contact information
-  contactNumber: {
-    type: DataTypes.STRING(20),
-    allowNull: true,
-  },
   contactEmail: {
     type: DataTypes.STRING(255),
-    allowNull: true,
+    allowNull: false,
+  },
+  contactPhone: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
   },
   // Preferred schedule
   preferredDate: {
     type: DataTypes.DATEONLY,
-    allowNull: true,
+    allowNull: false,
   },
   preferredTimeSlot: {
-    type: DataTypes.STRING(20),
-    allowNull: true,
+    type: DataTypes.STRING(100),
+    allowNull: false,
   },
+  // Optional priest
   preferredPriest: {
     type: DataTypes.STRING(255),
     allowNull: true,
   },
-  // Documents
-  documents: {
-    type: DataTypes.JSONB,
-    defaultValue: [],
-    comment: 'Array of document URLs (baptismal certificate, etc.)',
-  },
-  // Status
-  status: {
-    type: DataTypes.ENUM('pending', 'confirmed', 'completed', 'cancelled'),
-    defaultValue: 'pending',
-  },
-  // Additional notes
+  // Additional information
   additionalNotes: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  // Admin notes
+  // Status tracking
+  status: {
+    type: DataTypes.ENUM('pending', 'approved', 'declined', 'completed', 'rescheduled'),
+    defaultValue: 'pending',
+    allowNull: false,
+  },
   adminNotes: {
     type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  approvedBy: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'users',
+      key: 'id',
+    },
+    allowNull: true,
+  },
+  approvedAt: {
+    type: DataTypes.DATE,
     allowNull: true,
   },
 }, {
@@ -89,10 +91,11 @@ const EucharistBooking = sequelize.define('EucharistBooking', {
   timestamps: true,
   underscored: true,
   indexes: [
-    { fields: ['user_id'] },
     { fields: ['parish_id'] },
+    { fields: ['user_id'] },
     { fields: ['preferred_date'] },
     { fields: ['status'] },
+    { fields: ['communicant_name'] },
   ],
 });
 

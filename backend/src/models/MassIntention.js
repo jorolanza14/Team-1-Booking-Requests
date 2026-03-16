@@ -14,7 +14,6 @@ const MassIntention = sequelize.define('MassIntention', {
   intentionDetails: {
     type: DataTypes.TEXT,
     allowNull: false,
-    comment: 'For the Dead: names to pray for, Thanksgiving: what to be thankful for, Special Intention: what is the special intention',
   },
   donorName: {
     type: DataTypes.STRING(255),

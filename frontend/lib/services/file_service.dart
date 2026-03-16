@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
@@ -14,8 +14,7 @@ class FileService {
   Future<XFile?> pickImage(ImageSource source) async {
     try {
       final picker = ImagePicker();
-      final XFile? image = await picker.pickImage(source: source);
-      return image;
+      return await picker.pickImage(source: source);
     } catch (e) {
       print('Error picking image: $e');
       return null;
@@ -30,50 +29,40 @@ class FileService {
     Map<String, String>? additionalFields,
   }) async {
     try {
-      File file = File(filePath);
-      
-      var response = await ApiConfig.uploadFile(
-        ApiConfig.filesEndpoint + '/upload',
-        token,
-        file,
-        'file',
-        additionalFields: {
-          'category': category ?? 'general',
-          ...?additionalFields,
-        },
-      );
+      final uri = Uri.parse('${ApiConfig.filesEndpoint}/upload');
+      final request = http.MultipartRequest('POST', uri);
+
+      // Attach the file
+      request.files.add(await http.MultipartFile.fromPath('file', filePath));
+
+      // Add additional fields
+      request.fields.addAll({
+        'category': category ?? 'general',
+        ...?additionalFields,
+      });
+
+      // Add authorization header
+      request.headers['Authorization'] = 'Bearer $token';
+
+      // Send request
+      final streamedResponse = await request.send();
+
+      // Convert to Response so we can read the body easily
+      final response = await http.Response.fromStream(streamedResponse);
+
+      final Map<String, dynamic> data =
+      response.body.isNotEmpty ? json.decode(response.body) : {};
 
       if (response.statusCode == 201) {
-        final responseBody = await response.stream.bytesToString();
-        final data = Map<String, dynamic>.from(
-          await response.stream.bytesToString().then((value) => value.isNotEmpty ? value : '{}').then((value) => value != '{}' ? value : '{}')
-        );
-        
-        // Parse JSON safely
-        Map<String, dynamic> jsonData;
-        try {
-          jsonData = data.isNotEmpty ? data : {};
-        } catch (e) {
-          jsonData = {};
-        }
-
         return ApiResponse<Map<String, dynamic>>(
           success: true,
-          data: jsonData,
-          message: jsonData['message'],
+          data: data,
+          message: data['message'],
         );
       } else {
-        final errorBody = await response.stream.bytesToString();
-        Map<String, dynamic> errorData = {};
-        try {
-          errorData = errorBody.isNotEmpty ? Map<String, dynamic>.from(errorBody) : {};
-        } catch (e) {
-          errorData = {'error': 'Upload failed'};
-        }
-
         return ApiResponse<Map<String, dynamic>>(
           success: false,
-          message: errorData['message'] ?? 'Upload failed',
+          message: data['message'] ?? 'Upload failed',
           statusCode: response.statusCode,
         );
       }
@@ -92,16 +81,16 @@ class FileService {
     String category = 'general',
   }) async {
     try {
-      final response = await ApiConfig.getWithAuth(
-        '${ApiConfig.filesEndpoint}?category=$category',
-        token,
+      final uri = Uri.parse('${ApiConfig.filesEndpoint}?category=$category');
+      final response = await http.get(
+        uri,
+        headers: {'Authorization': 'Bearer $token'},
       );
 
-      if (response.statusCode == 200) {
-        final jsonData = await response.stream.bytesToString();
-        final Map<String, dynamic> data = 
-          jsonData.isNotEmpty ? Map<String, dynamic>.from(jsonData) : {};
+      final Map<String, dynamic> data =
+      response.body.isNotEmpty ? json.decode(response.body) : {};
 
+      if (response.statusCode == 200) {
         return ApiResponse<List<dynamic>>(
           success: true,
           data: data['files'] ?? [],
@@ -110,7 +99,7 @@ class FileService {
       } else {
         return ApiResponse<List<dynamic>>(
           success: false,
-          message: 'Failed to fetch files',
+          message: data['message'] ?? 'Failed to fetch files',
           statusCode: response.statusCode,
         );
       }
@@ -130,16 +119,17 @@ class FileService {
     String category = 'general',
   }) async {
     try {
-      final response = await ApiConfig.deleteWithAuth(
-        '${ApiConfig.filesEndpoint}/$filename?category=$category',
-        token,
+      final uri = Uri.parse(
+          '${ApiConfig.filesEndpoint}/$filename?category=$category');
+      final response = await http.delete(
+        uri,
+        headers: {'Authorization': 'Bearer $token'},
       );
 
-      if (response.statusCode == 200) {
-        final jsonData = await response.stream.bytesToString();
-        final Map<String, dynamic> data = 
-          jsonData.isNotEmpty ? Map<String, dynamic>.from(jsonData) : {};
+      final Map<String, dynamic> data =
+      response.body.isNotEmpty ? json.decode(response.body) : {};
 
+      if (response.statusCode == 200) {
         return ApiResponse<void>(
           success: true,
           message: data['message'],
@@ -147,7 +137,7 @@ class FileService {
       } else {
         return ApiResponse<void>(
           success: false,
-          message: 'Failed to delete file',
+          message: data['message'] ?? 'Failed to delete file',
           statusCode: response.statusCode,
         );
       }

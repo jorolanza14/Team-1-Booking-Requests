@@ -7,14 +7,6 @@ const WeddingBooking = sequelize.define('WeddingBooking', {
     primaryKey: true,
     autoIncrement: true,
   },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'users',
-      key: 'id',
-    },
-  },
   parishId: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -23,85 +15,76 @@ const WeddingBooking = sequelize.define('WeddingBooking', {
       key: 'id',
     },
   },
-  // Groom information
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'users',
+      key: 'id',
+    },
+  },
+  // Couple's information
   groomFullName: {
     type: DataTypes.STRING(255),
-    allowNull: true,
+    allowNull: false,
   },
-  groomDateOfBirth: {
-    type: DataTypes.DATEONLY,
-    allowNull: true,
-  },
-  groomContactNumber: {
-    type: DataTypes.STRING(20),
-    allowNull: true,
-  },
-  // Bride information
   brideFullName: {
     type: DataTypes.STRING(255),
-    allowNull: true,
-  },
-  brideDateOfBirth: {
-    type: DataTypes.DATEONLY,
-    allowNull: true,
-  },
-  brideContactNumber: {
-    type: DataTypes.STRING(20),
-    allowNull: true,
-  },
-  // Godparents/sponsors information
-  godparents: {
-    type: DataTypes.JSONB,
-    allowNull: true,
-    defaultValue: [],
-    comment: 'Array of godparent objects: [{name, contact}]',
+    allowNull: false,
   },
   // Contact information
-  contactNumber: {
-    type: DataTypes.STRING(20),
-    allowNull: true,
-  },
   contactEmail: {
     type: DataTypes.STRING(255),
-    allowNull: true,
+    allowNull: false,
+  },
+  contactPhone: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
   },
   // Preferred schedule
   preferredDate: {
     type: DataTypes.DATEONLY,
-    allowNull: true,
+    allowNull: false,
   },
   preferredTimeSlot: {
-    type: DataTypes.STRING(20),
-    allowNull: true,
-  },
-  preferredPriest: {
-    type: DataTypes.STRING(255),
-    allowNull: true,
+    type: DataTypes.STRING(100),
+    allowNull: false,
   },
   // Seminar schedule
   seminarSchedule: {
     type: DataTypes.DATE,
     allowNull: true,
   },
-  // Documents
-  documents: {
-    type: DataTypes.JSONB,
-    defaultValue: [],
-    comment: 'Array of document URLs (CENOMAR, birth certs, baptismal certs, etc.)',
+  // Optional priest
+  preferredPriest: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
   },
-  // Status
-  status: {
-    type: DataTypes.ENUM('pending', 'confirmed', 'completed', 'cancelled'),
-    defaultValue: 'pending',
-  },
-  // Additional notes
+  // Additional information
   additionalNotes: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  // Admin notes
+  // Status tracking
+  status: {
+    type: DataTypes.ENUM('pending', 'approved', 'declined', 'completed', 'rescheduled'),
+    defaultValue: 'pending',
+    allowNull: false,
+  },
   adminNotes: {
     type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  approvedBy: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'users',
+      key: 'id',
+    },
+    allowNull: true,
+  },
+  approvedAt: {
+    type: DataTypes.DATE,
     allowNull: true,
   },
 }, {
@@ -109,10 +92,12 @@ const WeddingBooking = sequelize.define('WeddingBooking', {
   timestamps: true,
   underscored: true,
   indexes: [
-    { fields: ['user_id'] },
     { fields: ['parish_id'] },
+    { fields: ['user_id'] },
     { fields: ['preferred_date'] },
     { fields: ['status'] },
+    { fields: ['groom_full_name'] },
+    { fields: ['bride_full_name'] },
   ],
 });
 

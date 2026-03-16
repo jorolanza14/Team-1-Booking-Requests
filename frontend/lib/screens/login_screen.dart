@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Text(
                 'Sign in to your account',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               SizedBox(height: 30),
               

@@ -41,12 +41,10 @@ const Booking = sequelize.define('Booking', {
   documents: {
     type: DataTypes.JSONB,
     defaultValue: [],
-    comment: 'Array of document URLs uploaded by user',
   },
   additionalInfo: {
     type: DataTypes.JSONB,
     defaultValue: {},
-    comment: 'Sacrament-specific information',
   },
 }, {
   tableName: 'bookings',

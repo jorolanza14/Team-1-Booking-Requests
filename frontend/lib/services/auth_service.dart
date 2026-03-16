@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../models/user.dart';
@@ -21,11 +20,11 @@ class AuthService {
   );
 
   String? _accessToken;
-  String? _refreshToken;
+  String? _refreshTokenValue;
   User? _currentUser;
 
   String? get accessToken => _accessToken;
-  String? get storedRefreshToken => _refreshToken;
+  String? get refreshToken => _refreshTokenValue;
   User? get currentUser => _currentUser;
 
   bool get isAuthenticated => _accessToken != null && _currentUser != null;
@@ -35,7 +34,7 @@ class AuthService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     
     _accessToken = prefs.getString(AppConstants.tokenKey);
-    _refreshToken = prefs.getString(AppConstants.refreshTokenKey);
+    _refreshTokenValue = prefs.getString(AppConstants.refreshTokenKey);
     
     String? userData = prefs.getString(AppConstants.userKey);
     if (userData != null) {
@@ -187,7 +186,7 @@ class AuthService {
   // Logout user
   Future<void> logout() async {
     _accessToken = null;
-    _refreshToken = null;
+    _refreshTokenValue = null;
     _currentUser = null;
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -201,12 +200,12 @@ class AuthService {
   }
 
   // Refresh access token
-  Future<bool> refreshAccessToken() async {
-    if (_refreshToken == null) return false;
+  Future<bool> refreshTokenValue() async {
+    if (_refreshTokenValue == null) return false;
 
     try {
       final response = await ApiConfig.post(ApiConfig.refreshEndpoint, json.encode({
-        'refreshToken': _refreshToken,
+        'refreshToken': _refreshTokenValue,
       }));
 
       if (response.statusCode == 200) {
@@ -254,7 +253,7 @@ class AuthService {
         );
       } else if (response.statusCode == 401) {
         // Try to refresh token and retry
-        bool refreshSuccess = await refreshAccessToken();
+        bool refreshSuccess = await refreshTokenValue();
         if (refreshSuccess) {
           return await getCurrentUser(); // Retry after refresh
         } else {
@@ -319,7 +318,7 @@ class AuthService {
         );
       } else if (response.statusCode == 401) {
         // Try to refresh token and retry
-        bool refreshSuccess = await refreshAccessToken();
+        bool refreshSuccess = await refreshTokenValue();
         if (refreshSuccess) {
           return await updateProfile(
             firstName: firstName,
@@ -378,7 +377,7 @@ class AuthService {
         );
       } else if (response.statusCode == 401) {
         // Try to refresh token and retry
-        bool refreshSuccess = await refreshAccessToken();
+        bool refreshSuccess = await refreshTokenValue();
         if (refreshSuccess) {
           return await changePassword(
             oldPassword: oldPassword,
@@ -409,12 +408,12 @@ class AuthService {
   // Store user data in preferences
   Future<void> _storeUserData(Map<String, dynamic> data) async {
     _accessToken = data['accessToken'];
-    _refreshToken = data['refreshToken'];
+    _refreshTokenValue = data['refreshToken'];
     _currentUser = User.fromJson(data['user']);
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(AppConstants.tokenKey, _accessToken!);
-    await prefs.setString(AppConstants.refreshTokenKey, _refreshToken!);
+    await prefs.setString(AppConstants.refreshTokenKey, _refreshTokenValue!);
     await prefs.setString(AppConstants.userKey, json.encode(data['user']));
     await prefs.setBool(AppConstants.isLoggedInKey, true);
   }

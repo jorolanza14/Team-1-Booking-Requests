@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 
-const BaptismBooking = sequelize.define('BaptismBooking', {
+const AnointingSickBooking = sequelize.define('AnointingSickBooking', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -23,25 +23,16 @@ const BaptismBooking = sequelize.define('BaptismBooking', {
       key: 'id',
     },
   },
-  // Child's information
-  childFullName: {
+  // Sick person's information
+  sickPersonName: {
     type: DataTypes.STRING(255),
     allowNull: false,
   },
-  dateOfBirth: {
-    type: DataTypes.DATEONLY,
-    allowNull: false,
-  },
-  // Parents' information
-  fatherName: {
+  // Contact person information
+  contactPersonName: {
     type: DataTypes.STRING(255),
     allowNull: false,
   },
-  motherName: {
-    type: DataTypes.STRING(255),
-    allowNull: false,
-  },
-  // Contact information
   contactEmail: {
     type: DataTypes.STRING(255),
     allowNull: false,
@@ -50,6 +41,15 @@ const BaptismBooking = sequelize.define('BaptismBooking', {
     type: DataTypes.STRING(20),
     allowNull: false,
   },
+  // Location information
+  location: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+  },
+  locationAddress: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   // Preferred schedule
   preferredDate: {
     type: DataTypes.DATEONLY,
@@ -57,7 +57,7 @@ const BaptismBooking = sequelize.define('BaptismBooking', {
   },
   preferredTimeSlot: {
     type: DataTypes.STRING(100),
-    allowNull: false,
+    allowNull: true,
   },
   // Optional priest
   preferredPriest: {
@@ -92,7 +92,7 @@ const BaptismBooking = sequelize.define('BaptismBooking', {
     allowNull: true,
   },
 }, {
-  tableName: 'baptism_bookings',
+  tableName: 'anointing_sick_bookings',
   timestamps: true,
   underscored: true,
   indexes: [
@@ -100,8 +100,8 @@ const BaptismBooking = sequelize.define('BaptismBooking', {
     { fields: ['user_id'] },
     { fields: ['preferred_date'] },
     { fields: ['status'] },
-    { fields: ['child_full_name'] },
+    { fields: ['sick_person_name'] },
   ],
 });
 
-module.exports = BaptismBooking;
+module.exports = AnointingSickBooking;

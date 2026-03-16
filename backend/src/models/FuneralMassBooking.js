@@ -7,14 +7,6 @@ const FuneralMassBooking = sequelize.define('FuneralMassBooking', {
     primaryKey: true,
     autoIncrement: true,
   },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'users',
-      key: 'id',
-    },
-  },
   parishId: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -23,31 +15,35 @@ const FuneralMassBooking = sequelize.define('FuneralMassBooking', {
       key: 'id',
     },
   },
-  // Deceased information
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'users',
+      key: 'id',
+    },
+  },
+  // Deceased person's information
   deceasedFullName: {
     type: DataTypes.STRING(255),
-    allowNull: true,
+    allowNull: false,
   },
   dateOfDeath: {
     type: DataTypes.DATEONLY,
-    allowNull: true,
+    allowNull: false,
   },
-  placeOfDeath: {
-    type: DataTypes.STRING(255),
-    allowNull: true,
-  },
-  // Representative information
+  // Representative's information
   representativeName: {
     type: DataTypes.STRING(255),
-    allowNull: true,
-  },
-  contactNumber: {
-    type: DataTypes.STRING(20),
-    allowNull: true,
+    allowNull: false,
   },
   contactEmail: {
     type: DataTypes.STRING(255),
-    allowNull: true,
+    allowNull: false,
+  },
+  contactPhone: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
   },
   // Wake information
   wakeStartDate: {
@@ -65,35 +61,42 @@ const FuneralMassBooking = sequelize.define('FuneralMassBooking', {
   // Preferred schedule
   preferredDate: {
     type: DataTypes.DATEONLY,
-    allowNull: true,
+    allowNull: false,
   },
   preferredTimeSlot: {
-    type: DataTypes.STRING(20),
-    allowNull: true,
+    type: DataTypes.STRING(100),
+    allowNull: false,
   },
+  // Optional priest
   preferredPriest: {
     type: DataTypes.STRING(255),
     allowNull: true,
   },
-  // Documents
-  documents: {
-    type: DataTypes.JSONB,
-    defaultValue: [],
-    comment: 'Array of document URLs (death certificate, etc.)',
-  },
-  // Status
-  status: {
-    type: DataTypes.ENUM('pending', 'confirmed', 'completed', 'cancelled'),
-    defaultValue: 'pending',
-  },
-  // Additional notes
+  // Additional information
   additionalNotes: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  // Admin notes
+  // Status tracking
+  status: {
+    type: DataTypes.ENUM('pending', 'approved', 'declined', 'completed', 'rescheduled'),
+    defaultValue: 'pending',
+    allowNull: false,
+  },
   adminNotes: {
     type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  approvedBy: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'users',
+      key: 'id',
+    },
+    allowNull: true,
+  },
+  approvedAt: {
+    type: DataTypes.DATE,
     allowNull: true,
   },
 }, {
@@ -101,10 +104,11 @@ const FuneralMassBooking = sequelize.define('FuneralMassBooking', {
   timestamps: true,
   underscored: true,
   indexes: [
-    { fields: ['user_id'] },
     { fields: ['parish_id'] },
+    { fields: ['user_id'] },
     { fields: ['preferred_date'] },
     { fields: ['status'] },
+    { fields: ['deceased_full_name'] },
   ],
 });
 

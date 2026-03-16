@@ -1,24 +1,13 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class AppProvider extends ChangeNotifier {
-  bool _isLoading = false;
-  String? _errorMessage;
+  // Example variable
+  String _username = '';
 
-  bool get isLoading => _isLoading;
-  String? get errorMessage => _errorMessage;
+  String get username => _username;
 
-  void setLoading(bool loading) {
-    _isLoading = loading;
-    notifyListeners();
-  }
-
-  void setErrorMessage(String? message) {
-    _errorMessage = message;
-    notifyListeners();
-  }
-
-  void clearError() {
-    _errorMessage = null;
+  void setUsername(String name) {
+    _username = name;
     notifyListeners();
   }
 }

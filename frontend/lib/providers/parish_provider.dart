@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 
 import '../models/parish.dart';
 import '../services/parish_service.dart';
-import '../models/api_response.dart';
 
 class ParishProvider extends ChangeNotifier {
   final ParishService _parishService = ParishService();

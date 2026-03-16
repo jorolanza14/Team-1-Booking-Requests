@@ -7,14 +7,6 @@ const ReconciliationBooking = sequelize.define('ReconciliationBooking', {
     primaryKey: true,
     autoIncrement: true,
   },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'users',
-      key: 'id',
-    },
-  },
   parishId: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -23,46 +15,62 @@ const ReconciliationBooking = sequelize.define('ReconciliationBooking', {
       key: 'id',
     },
   },
-  // Penitent information
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'users',
+      key: 'id',
+    },
+  },
+  // Penitent's information
   penitentName: {
     type: DataTypes.STRING(255),
-    allowNull: true,
+    allowNull: false,
   },
   // Contact information
-  contactNumber: {
-    type: DataTypes.STRING(20),
-    allowNull: true,
-  },
   contactEmail: {
     type: DataTypes.STRING(255),
-    allowNull: true,
+    allowNull: false,
+  },
+  contactPhone: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
   },
   // Preferred schedule
   preferredDate: {
     type: DataTypes.DATEONLY,
-    allowNull: true,
+    allowNull: false,
   },
   preferredTimeSlot: {
-    type: DataTypes.STRING(20),
-    allowNull: true,
+    type: DataTypes.STRING(100),
+    allowNull: false,
   },
-  preferredPriest: {
-    type: DataTypes.STRING(255),
-    allowNull: true,
-  },
-  // Status
-  status: {
-    type: DataTypes.ENUM('pending', 'confirmed', 'completed', 'cancelled'),
-    defaultValue: 'pending',
-  },
-  // Additional notes
+  // Additional information
   additionalNotes: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  // Admin notes
+  // Status tracking
+  status: {
+    type: DataTypes.ENUM('pending', 'approved', 'declined', 'completed', 'rescheduled'),
+    defaultValue: 'pending',
+    allowNull: false,
+  },
   adminNotes: {
     type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  approvedBy: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'users',
+      key: 'id',
+    },
+    allowNull: true,
+  },
+  approvedAt: {
+    type: DataTypes.DATE,
     allowNull: true,
   },
 }, {
@@ -70,10 +78,11 @@ const ReconciliationBooking = sequelize.define('ReconciliationBooking', {
   timestamps: true,
   underscored: true,
   indexes: [
-    { fields: ['user_id'] },
     { fields: ['parish_id'] },
+    { fields: ['user_id'] },
     { fields: ['preferred_date'] },
     { fields: ['status'] },
+    { fields: ['penitent_name'] },
   ],
 });
 
