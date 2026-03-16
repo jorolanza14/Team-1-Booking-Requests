@@ -1,0 +1,209 @@
+Project: BOOKING REQUEST SITE
+Booking System Requirements (Mass Intentions, Weddings, Baptisms)
+Intended Scope
+Level: Diocese-wide system
+Usage: All parishes within the diocese will use the platform
+Users can book sacraments across any parish
+
+Data Requirements for Each Module
+7 Sacraments 
+Baptisms:
+Child’s full name
+Date of birth
+Birth certificate upload
+Parents’ names
+Godparents’ details 
+Each parish may input allowed number of godparents 
+Contact number / email 
+Additional notes
+Preferred parish 
+Preferred baptism date 
+Preferred time slot 
+FOR DATE & TIME: Each parish can set daily limits, time slots,  unavailable dates (blackout) 
+Preferred priest (optional) – Display a note “Subject to availability. Parish will confirm.”
+Weddings
+Groom’s full name
+Bride’s full name
+Required documents (CENOMAR, birth certs, baptismal certs, confirmation certs)
+Godparents’ details 
+Each parish may input allowed number of godparents
+Contact number 
+Preferred parish
+Preferred wedding date
+Preferred time slot 
+Seminar schedule
+FOR DATE, TIME & SCHED: Each parish can set daily limits, time slots,  unavailable dates (blackout) 
+Preferred priest (optional) – Display a note “Subject to availability. Parish will confirm.”
+Confirmation
+Name of confirmand 
+Father’s name
+Mother’s name
+Sponsor/Godparent’s name
+Each parish may input allowed number of godparents
+Baptismal certificate 
+Preferred parish 
+Preferred confirmation date - 
+Preferred time slot 
+FOR DATE & TIME: Each parish can set daily limits, time slots, unavailable dates (blackout) 
+Preferred priest (optional) – Display a note “Subject to availability. Parish will confirm.”
+Eucharist (First Communion) 
+Communicant’s name 
+Father’s name
+Mother’s name
+Baptismal certificate
+Preferred parish 
+Preferred first communion date 
+Preferred time slot 
+FOR DATE & TIME: Each parish can set daily limits, time slots, unavailable dates (blackout)
+Preferred priest (optional) – Display a note “Subject to availability. Parish will confirm.”
+Reconciliation (Confession)
+Penitent’s name 
+Preferred confession date 
+Preferred parish 
+Preferred time slot
+FOR TIME: Each parish can set daily limits, time slots,  unavailable dates (blackout) 
+Anointing the Sick (Extreme Unction) 
+Name of the sick 
+Contact person 
+Hospital/ Home Location 
+Requested sacrament date 
+FOR DATE: Each parish can set daily limits, time slots, unavailable dates (blackout)
+Preferred priest (optional) – Display a note “Subject to availability. Parish will confirm.”
+Mass Intentions
+Type of intention (For the Dead / Thanksgiving / Special Intention)
+Name(s) to be prayed for
+Donor Name
+Date requested
+Preferred parish 
+Mass schedule  
+FOR SCHED: Each parish can set daily limits, time slots, unavailable dates (blackout)
+Preferred priest (optional) – Display a note “Subject to availability. Parish will confirm.”
+Notes
+Funeral Mass
+Deceased persons name 
+Representative’s Contact 
+Date of death
+Death certificate
+Wake start date
+Wake end date 
+Preferred parish 
+Preferred funeral mass date 
+Preferred time slot 
+FOR DATE & TIME: Each parish can set daily limits, time slots, unavailable dates (blackout)
+Preferred priest (optional) – Display a note “Subject to availability. Parish will confirm.”
+
+Booking Workflow
+Should requests be auto-approved or manually approved? ADMIN WILL APPROVE
+Should the requester receive email confirmation? EMAIL THAT THE BOOKING REQ WAS RECEIVED 
+Should staff be able to edit, decline, or reschedule bookings? YES 
+Should donations and billing be done/paid in the selected parish? UPLOAD PROOF OR PAYMENT
+
+User Roles
+Public / Parishioner:
+Submit booking
+Upload documents
+Check availability
+Parish Staff:
+View all requests
+Approve / decline bookings
+Manage schedules 
+Can set daily limits, time slots,  mass schedules, unavailable dates (blackout)
+Manage documents
+Access Mass Intentions PDF
+View schedule summary
+Diocese Admin:
+Full access and user management
+Parish Admin
+Full access to parish related activity and parish staff management
+
+Calendar & Scheduling Rules
+	Will differ per parish; each parish will be able to set each of the following:
+Number of baptisms allowed per day
+Number of wedding slots per week
+Mass intention cutoff time
+Blackout dates
+Mass schedules
+
+Mass Intentions PDF Format
+Daily or weekly PDF
+Grouping by intention type
+Sorting by Mass time
+Required layout and formatting
+
+Sacramental Record Digitization
+Which records need digitizing
+Availability of scanned copies
+Required searchable fields (name, year, parents, etc.)
+Search filters
+Integration with DIOS? - need to check this with sir Martin on how to integrate
+
+
+
+
+
+
+
+
+
+TO DO FIGMA 
+https://www.figma.com/design/ht2RWfiZiRavTZpTK4v9TD/Team-1-project?node-id=0-1&t=ZdW4VHLHixOjFs56-1 
+HOME PAGE 
+Page 1
+Done
+Page 2 ADMIN
+Done 
+SACRAMENTS
+Sacraments HOME
+Done
+
+
+
+
+Baptism 
+Done
+ADMIN
+Done
+Wedding
+Done
+ADMIN
+Done
+Confirmation 
+Done
+ADMIN
+Done
+Eucharist (First Communion)
+
+
+ADMIN
+
+
+Reconciliation (Confession)
+Done
+ADMIN
+
+
+Anointing the Sick (Extreme Unction)
+
+
+ADMIN
+
+
+MASS INTENTION PAGE 
+Mass Intentions
+Done
+ADMIN
+Done
+FUNERAL MASS PAGE
+Funeral Mass
+Done
+ADMIN
+Done
+SACRAMENTAL RECORDS PAGE 
+Sacramental Records ADMIN
+Done
+
+
+
+
+
+
