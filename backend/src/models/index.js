@@ -4,6 +4,15 @@ const Parish = require('./Parish');
 const Booking = require('./Booking');
 const MassIntention = require('./MassIntention');
 const MassSchedule = require('./MassSchedule');
+const SystemConfiguration = require('./SystemConfiguration');
+const BaptismBooking = require('./BaptismBooking');
+const WeddingBooking = require('./WeddingBooking');
+const ConfirmationBooking = require('./ConfirmationBooking');
+const EucharistBooking = require('./EucharistBooking');
+const ReconciliationBooking = require('./ReconciliationBooking');
+const AnointingOfTheSickBooking = require('./AnointingOfTheSickBooking');
+const FuneralMassBooking = require('./FuneralMassBooking');
+const TokenBlacklist = require('./TokenBlacklist');
 
 // New sacrament booking models
 const BaptismBooking = require('./BaptismBooking');

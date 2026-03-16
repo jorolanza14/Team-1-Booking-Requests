@@ -36,8 +36,8 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       
       if (success) {
-        // Navigate to home screen
-        Navigator.of(context).pushReplacementNamed('/home');
+        // Navigate to parish selection screen
+        Navigator.of(context).pushReplacementNamed('/parish-selection');
       }
     }
   }
@@ -48,8 +48,8 @@ class _LoginScreenState extends State<LoginScreen> {
     bool success = await authProvider.signInWithGoogle();
     
     if (success) {
-      // Navigate to home screen
-      Navigator.of(context).pushReplacementNamed('/home');
+      // Navigate to parish selection screen
+      Navigator.of(context).pushReplacementNamed('/parish-selection');
     }
   }
 

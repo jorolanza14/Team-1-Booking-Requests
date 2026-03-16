@@ -1,5 +1,7 @@
 const { validationResult } = require('express-validator');
 const authService = require('../services/authService');
+const { TokenBlacklist } = require('../models');
+const jwt = require('jsonwebtoken');
 
 // Register new user
 exports.register = async (req, res, next) => {
@@ -53,18 +55,18 @@ exports.login = async (req, res, next) => {
     // Validate request
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Validation failed',
-        details: errors.array() 
+        details: errors.array()
       });
     }
-    
+
     const { email, password } = req.body;
-    
+
     try {
       // Authenticate user using auth service
       const result = await authService.login(email, password);
-      
+
       // Return success response
       res.json({
         message: 'Login successful',
@@ -74,14 +76,14 @@ exports.login = async (req, res, next) => {
       });
     } catch (error) {
       if (error.message === 'Invalid credentials') {
-        return res.status(401).json({ 
+        return res.status(401).json({
           error: 'Invalid credentials',
-          message: 'Email or password is incorrect' 
+          message: 'Email or password is incorrect'
         });
       } else if (error.message === 'Account disabled') {
-        return res.status(403).json({ 
+        return res.status(403).json({
           error: 'Account disabled',
-          message: 'Your account has been deactivated. Please contact support.' 
+          message: 'Your account has been deactivated. Please contact support.'
         });
       }
       throw error;
@@ -206,35 +208,67 @@ exports.changePassword = async (req, res, next) => {
   try {
     const userId = req.user.userId;
     const { oldPassword, newPassword } = req.body;
-    
+
     // Validate request
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Validation failed',
-        details: errors.array() 
+        details: errors.array()
       });
     }
-    
+
     try {
       const result = await authService.updatePassword(userId, oldPassword, newPassword);
-      
+
       res.json(result);
     } catch (error) {
       if (error.message === 'Current password is incorrect') {
-        return res.status(400).json({ 
+        return res.status(400).json({
           error: 'Current password is incorrect',
-          message: error.message 
+          message: error.message
         });
       } else if (error.message === 'User not found') {
-        return res.status(404).json({ 
+        return res.status(404).json({
           error: 'User not found',
-          message: error.message 
+          message: error.message
         });
       }
       throw error;
     }
   } catch (error) {
+    next(error);
+  }
+};
+
+// Logout user
+exports.logout = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader ? authHeader.split(' ')[1] : null;
+
+    if (token) {
+      // Decode token to get expiration time
+      const decoded = jwt.decode(token);
+
+      // Calculate when the token expires
+      const expiresAt = decoded && decoded.exp
+        ? new Date(decoded.exp * 1000)
+        : new Date(Date.now() + 24 * 60 * 60 * 1000); // Default 24 hours if can't decode
+
+      // Add token to blacklist
+      await TokenBlacklist.blacklist(token, expiresAt, 'logout');
+
+      const userId = req.user ? req.user.userId : null;
+      console.log(`User ${userId} logged out at ${new Date().toISOString()} - token blacklisted`);
+    }
+
+    res.json({
+      message: 'Logout successful',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
     next(error);
   }
 };

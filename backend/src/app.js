@@ -16,6 +16,7 @@ const massScheduleRoutes = require('./routes/massSchedules');
 const userRoutes = require('./routes/users');
 const fileRoutes = require('./routes/files');
 const parishRoutes = require('./routes/parishes');
+const adminRoutes = require('./routes/admin');
 const apiDocsRoutes = require('./routes/apiDocs');
 
 // New sacrament booking routes
@@ -123,6 +124,21 @@ app.use('/api/sacramental-records', sacramentalRecordsRoutes);
 app.use('/api/payments', paymentRoutes);
 
 app.use('/api-docs', apiDocsRoutes);
+
+// Cleanup expired tokens from blacklist daily
+if (process.env.NODE_ENV !== 'test') {
+  const { TokenBlacklist } = require('./models');
+  setInterval(async () => {
+    try {
+      const deletedCount = await TokenBlacklist.cleanupExpired();
+      if (deletedCount > 0) {
+        console.log(`🗑️  Cleaned up ${deletedCount} expired tokens from blacklist`);
+      }
+    } catch (error) {
+      console.error('Error cleaning up token blacklist:', error);
+    }
+  }, 24 * 60 * 60 * 1000); // Run every 24 hours
+}
 
 // 404 handler
 app.use((req, res) => {

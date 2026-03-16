@@ -5,6 +5,9 @@ import 'providers/app_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/parish_provider.dart';
 import 'screens/splash_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/parish_selection_screen.dart';
+import 'screens/register_screen.dart';
 import 'config/app_constants.dart';
 
 void main() {
@@ -29,7 +32,13 @@ class MyApp extends StatelessWidget {
               visualDensity: VisualDensity.adaptivePlatformDensity,
               fontFamily: 'Roboto',
             ),
-            home: SplashScreen(),
+            initialRoute: '/',
+            routes: {
+              '/': (context) => SplashScreen(),
+              '/login': (context) => LoginScreen(),
+              '/parish-selection': (context) => ParishSelectionScreen(),
+              '/register': (context) => RegisterScreen(),
+            },
             debugShowCheckedModeBanner: false,
           );
         },

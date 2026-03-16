@@ -66,4 +66,7 @@ router.patch('/change-password', require('../middleware/auth').authenticateJWT, 
     .withMessage('New password must be at least 8 characters'),
 ], authController.changePassword);
 
+// Logout (protected route)
+router.post('/logout', require('../middleware/auth').authenticateJWT, authController.logout);
+
 module.exports = router;
