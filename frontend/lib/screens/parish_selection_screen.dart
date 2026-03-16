@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/parish.dart';
 import '../providers/parish_provider.dart';
 import '../widgets/custom_button.dart';
 
