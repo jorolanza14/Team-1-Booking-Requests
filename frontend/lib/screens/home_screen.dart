@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'baptism_booking_screen.dart';
+import 'wedding_booking_screen.dart';
+import 'confirmation_booking_screen.dart';
 
 // Entry Point
 void main() {
@@ -28,17 +31,17 @@ class HomeScreen extends StatelessWidget {
     {
       "title": "Baptism",
       "desc": "Book a baptism ceremony for your child",
-      "icon": "assets/icons/baptism.png",
+      "icon": "assets/icons/busog-puso.jpg",
     },
     {
       "title": "Wedding",
       "desc": "Schedule your sacred matrimony ceremony",
-      "icon": "assets/icons/wedding.png",
+      "icon": "assets/icons/civil-registry.png",
     },
     {
       "title": "Confirmation",
       "desc": "Book confirmation for strengthening faith",
-      "icon": "assets/icons/confirmation.png",
+      "icon": "assets/icons/scholarship-program.jpg",
     },
     {
       "title": "Eucharist (First Communion)",
@@ -111,13 +114,36 @@ class HomeScreen extends StatelessWidget {
                       final service = services[index];
                       return InkWell(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ServiceDetailScreen(
-                                  serviceTitle: service["title"]!),
-                            ),
-                          );
+                          // Navigate to specific booking page for Baptism, Wedding, Confirmation
+                          if (service["title"] == "Baptism") {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const BaptismBookingScreen(),
+                              ),
+                            );
+                          } else if (service["title"] == "Wedding") {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const WeddingBookingScreen(),
+                              ),
+                            );
+                          } else if (service["title"] == "Confirmation") {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ConfirmationBookingScreen(),
+                              ),
+                            );
+                          } else {
+                            // Placeholder for other services
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      "${service["title"]} page is not implemented yet.")),
+                            );
+                          }
                         },
                         child: Container(
                           padding: const EdgeInsets.all(16),
@@ -128,10 +154,11 @@ class HomeScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
+                              Image.asset(
+                                service["icon"]!,
                                 height: 40,
                                 width: 40,
-                                color: Colors.black, // Placeholder for icon
+                                fit: BoxFit.cover,
                               ),
                               const SizedBox(height: 15),
                               Text(
@@ -156,7 +183,6 @@ class HomeScreen extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 30),
-                  // How It Works Section (Centered Text)
                   const Center(
                     child: Text(
                       "How It Works",
@@ -165,9 +191,9 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Column(
+                  const Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
+                    children: [
                       Text(
                         "#1 Select Sacraments/Services",
                         style:
@@ -234,29 +260,6 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-// Placeholder Service Detail Page
-class ServiceDetailScreen extends StatelessWidget {
-  final String serviceTitle;
-  const ServiceDetailScreen({super.key, required this.serviceTitle});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(serviceTitle),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Text(
-          'This is the $serviceTitle page.\nYou can add booking form here.',
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 18),
         ),
       ),
     );

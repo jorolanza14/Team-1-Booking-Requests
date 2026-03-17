@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 
 class BaptismBookingScreen extends StatefulWidget {
   const BaptismBookingScreen({super.key});
@@ -23,6 +24,10 @@ class _BaptismBookingScreenState extends State<BaptismBookingScreen> {
   final TextEditingController _preferredPriestController = TextEditingController();
   final TextEditingController _paymentNotesController = TextEditingController();
 
+  // File variables
+  PlatformFile? _birthCertificateFile;
+  PlatformFile? _paymentProofFile;
+
   @override
   void dispose() {
     _childNameController.dispose();
@@ -41,6 +46,12 @@ class _BaptismBookingScreenState extends State<BaptismBookingScreen> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
+      if (_birthCertificateFile == null || _paymentProofFile == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please upload required files.")),
+        );
+        return;
+      }
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -77,6 +88,27 @@ class _BaptismBookingScreenState extends State<BaptismBookingScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _pickFile(bool isBirthCertificate) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+    );
+    if (result != null) {
+      setState(() {
+        if (isBirthCertificate) {
+          _birthCertificateFile = result.files.first;
+        } else {
+          _paymentProofFile = result.files.first;
+        }
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Selected: ${result.files.first.name}"),
+        ),
+      );
+    }
   }
 
   @override
@@ -152,11 +184,13 @@ class _BaptismBookingScreenState extends State<BaptismBookingScreen> {
                 ),
                 const SizedBox(height: 12),
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Implement file picker
-                  },
+                  onPressed: () => _pickFile(true),
                   icon: const Icon(Icons.upload_file),
-                  label: const Text("Upload Birth Certificate *"),
+                  label: Text(
+                    _birthCertificateFile != null
+                        ? "Uploaded: ${_birthCertificateFile!.name}"
+                        : "Upload Birth Certificate *",
+                  ),
                 ),
               ]),
 
@@ -275,11 +309,13 @@ class _BaptismBookingScreenState extends State<BaptismBookingScreen> {
               // Payment Section
               _buildSection(title: "Payment Information", children: [
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Implement file picker for payment proof
-                  },
+                  onPressed: () => _pickFile(false),
                   icon: const Icon(Icons.upload_file),
-                  label: const Text("Upload Proof of Payment *"),
+                  label: Text(
+                    _paymentProofFile != null
+                        ? "Uploaded: ${_paymentProofFile!.name}"
+                        : "Upload Proof of Payment *",
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
