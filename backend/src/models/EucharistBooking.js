@@ -26,33 +26,33 @@ const EucharistBooking = sequelize.define('EucharistBooking', {
   // Communicant's information
   communicantName: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
   fatherName: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
   motherName: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
   // Contact information
   contactEmail: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
   contactPhone: {
     type: DataTypes.STRING(20),
-    allowNull: false,
+    allowNull: true,
   },
   // Preferred schedule
   preferredDate: {
     type: DataTypes.DATEONLY,
-    allowNull: false,
+    allowNull: true,
   },
   preferredTimeSlot: {
     type: DataTypes.STRING(100),
-    allowNull: false,
+    allowNull: true,
   },
   // Optional priest
   preferredPriest: {

@@ -10,18 +10,9 @@ const WeddingBooking = require('./WeddingBooking');
 const ConfirmationBooking = require('./ConfirmationBooking');
 const EucharistBooking = require('./EucharistBooking');
 const ReconciliationBooking = require('./ReconciliationBooking');
-const AnointingOfTheSickBooking = require('./AnointingOfTheSickBooking');
-const FuneralMassBooking = require('./FuneralMassBooking');
-const TokenBlacklist = require('./TokenBlacklist');
-
-// New sacrament booking models
-const BaptismBooking = require('./BaptismBooking');
-const WeddingBooking = require('./WeddingBooking');
-const ConfirmationBooking = require('./ConfirmationBooking');
-const EucharistBooking = require('./EucharistBooking');
-const ReconciliationBooking = require('./ReconciliationBooking');
 const AnointingSickBooking = require('./AnointingSickBooking');
 const FuneralMassBooking = require('./FuneralMassBooking');
+const TokenBlacklist = require('./TokenBlacklist');
 
 // Supporting models
 const ParishSlotSetting = require('./ParishSlotSetting');
