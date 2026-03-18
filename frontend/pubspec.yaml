@@ -36,6 +36,9 @@ dependencies:
   # Image handling
   image_picker: ^1.0.4
 
+  # File picker for uploading documents (birth cert, baptismal, CENOMAR, etc.)
+  file_picker: ^5.2.7
+
   # Google Sign-In
   google_sign_in: ^6.1.5
 
@@ -98,5 +101,5 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/custom-fonts/#from-packages
+  # For details regarding fonts from package dependencies, see
+  # https://flutter.dev/custom-fonts/#from-packages
