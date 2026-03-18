@@ -26,24 +26,24 @@ const FuneralMassBooking = sequelize.define('FuneralMassBooking', {
   // Deceased person's information
   deceasedFullName: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
   dateOfDeath: {
     type: DataTypes.DATEONLY,
-    allowNull: false,
+    allowNull: true,
   },
   // Representative's information
   representativeName: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
   contactEmail: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
   contactPhone: {
     type: DataTypes.STRING(20),
-    allowNull: false,
+    allowNull: true,
   },
   // Wake information
   wakeStartDate: {
@@ -61,11 +61,11 @@ const FuneralMassBooking = sequelize.define('FuneralMassBooking', {
   // Preferred schedule
   preferredDate: {
     type: DataTypes.DATEONLY,
-    allowNull: false,
+    allowNull: true,
   },
   preferredTimeSlot: {
     type: DataTypes.STRING(100),
-    allowNull: false,
+    allowNull: true,
   },
   // Optional priest
   preferredPriest: {

@@ -26,29 +26,29 @@ const WeddingBooking = sequelize.define('WeddingBooking', {
   // Couple's information
   groomFullName: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
   brideFullName: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
   // Contact information
   contactEmail: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
   contactPhone: {
     type: DataTypes.STRING(20),
-    allowNull: false,
+    allowNull: true,
   },
   // Preferred schedule
   preferredDate: {
     type: DataTypes.DATEONLY,
-    allowNull: false,
+    allowNull: true,
   },
   preferredTimeSlot: {
     type: DataTypes.STRING(100),
-    allowNull: false,
+    allowNull: true,
   },
   // Seminar schedule
   seminarSchedule: {

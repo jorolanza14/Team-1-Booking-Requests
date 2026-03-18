@@ -26,25 +26,25 @@ const AnointingSickBooking = sequelize.define('AnointingSickBooking', {
   // Sick person's information
   sickPersonName: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
   // Contact person information
   contactPersonName: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
   contactEmail: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
   contactPhone: {
     type: DataTypes.STRING(20),
-    allowNull: false,
+    allowNull: true,
   },
   // Location information
   location: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
   },
   locationAddress: {
     type: DataTypes.TEXT,
@@ -53,7 +53,7 @@ const AnointingSickBooking = sequelize.define('AnointingSickBooking', {
   // Preferred schedule
   preferredDate: {
     type: DataTypes.DATEONLY,
-    allowNull: false,
+    allowNull: true,
   },
   preferredTimeSlot: {
     type: DataTypes.STRING(100),
